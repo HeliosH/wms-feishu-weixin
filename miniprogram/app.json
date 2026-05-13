@@ -1,0 +1,29 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/login/login",
+    "pages/item/list/list",
+    "pages/item/detail/detail",
+    "pages/borrow/apply/apply",
+    "pages/borrow/my-borrows/my-borrows",
+    "pages/borrow/history/history",
+    "pages/admin/category/category",
+    "pages/admin/inventory/inventory",
+    "pages/admin/inventory-log/inventory-log",
+    "pages/admin/borrow-approval/borrow-approval",
+    "pages/admin/collect-confirm/collect-confirm",
+    "pages/admin/return-confirm/return-confirm",
+    "pages/admin/users/users",
+    "pages/admin/item-borrowers/item-borrowers",
+    "pages/admin/backfill/backfill"
+  ],
+  "window": {
+    "backgroundColor": "#F6F6F6",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1890FF",
+    "navigationBarTitleText": "库存管理",
+    "navigationBarTextStyle": "white"
+  },
+  "sitemapLocation": "sitemap.json",
+  "cloud": true
+}

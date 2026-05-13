@@ -1,0 +1,47 @@
+<view class="container">
+  <!-- 选择货物 -->
+  <view class="card">
+    <view class="card-title">申请借用</view>
+
+    <view class="form-item" wx:if="{{!itemId}}">
+      <text class="form-label">选择货物</text>
+      <picker mode="selector" range="{{itemNames}}" bindchange="onItemPick">
+        <text class="picker-value {{selectedItemName ? '' : 'placeholder'}}">
+          {{selectedItemName || '请选择货物'}}
+        </text>
+      </picker>
+    </view>
+
+    <view class="selected-item" wx:if="{{itemId && selectedItemName}}">
+      <text class="item-label">货物:</text>
+      <text class="item-name">{{selectedItemName}}</text>
+      <text class="item-stock">可用: {{availableQty}}</text>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">借用数量</text>
+      <input class="form-input" type="number" placeholder="请输入数量" value="{{quantity}}" bindinput="onQuantityInput" />
+    </view>
+
+    <view class="form-item vertical">
+      <text class="form-label">申请备注</text>
+      <textarea class="form-textarea" placeholder="请说明借用原因" value="{{remark}}" bindinput="onRemarkInput" maxlength="200" />
+    </view>
+
+    <view class="photo-section">
+      <text class="form-label">领取拍照留档</text>
+      <text class="photo-hint">申请人收到货物时拍照，证明货物已领取</text>
+      <view class="photo-area" bindtap="onTakePhoto">
+        <image class="photo-preview" wx:if="{{photoUrl}}" src="{{photoUrl}}" mode="aspectFill" />
+        <view class="photo-placeholder" wx:else>
+          <text class="photo-icon">+</text>
+          <text class="photo-text">拍照</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <button class="btn-primary submit-btn" bindtap="onSubmit" loading="{{submitting}}" disabled="{{submitting}}">
+    提交申请
+  </button>
+</view>

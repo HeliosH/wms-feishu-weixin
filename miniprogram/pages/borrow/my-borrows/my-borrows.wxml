@@ -1,0 +1,34 @@
+<view class="container">
+  <view class="tab-bar">
+    <view class="tab {{activeTab === 'pending' ? 'active' : ''}}" bindtap="switchTab" data-tab="pending">待审批</view>
+    <view class="tab {{activeTab === 'approved' ? 'active' : ''}}" bindtap="switchTab" data-tab="approved">待领取</view>
+    <view class="tab {{activeTab === 'collected' ? 'active' : ''}}" bindtap="switchTab" data-tab="collected">使用中</view>
+  </view>
+
+  <view class="record-list">
+    <view class="record-card card" wx:for="{{records}}" wx:key="_id">
+      <view class="record-header">
+        <text class="record-item-name">{{item.item_name}}</text>
+        <text class="tag {{statusTagClass}}">{{statusLabel}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">数量</text>
+        <text class="record-value">{{item.quantity}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">申请时间</text>
+        <text class="record-value">{{formatTime(item.apply_time)}}</text>
+      </view>
+      <view class="record-row" wx:if="{{item.reject_reason}}">
+        <text class="record-label">驳回原因</text>
+        <text class="record-value reject">{{item.reject_reason}}</text>
+      </view>
+      <view class="record-row" wx:if="{{item.apply_remark}}">
+        <text class="record-label">备注</text>
+        <text class="record-value">{{item.apply_remark}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-tip" wx:if="{{!loading && records.length === 0}}">暂无记录</view>
+</view>

@@ -1,0 +1,83 @@
+<view class="container">
+  <!-- 用户信息 -->
+  <view class="user-bar card">
+    <view class="user-info">
+      <image class="avatar" src="{{userInfo.avatar_url || '/images/default-avatar.png'}}" mode="aspectFill" />
+      <view class="user-text">
+        <text class="user-name">{{userInfo.name || '未设置姓名'}}</text>
+        <text class="user-role tag {{userInfo.role === 'admin' ? 'tag-red' : userInfo.role === 'warehouse_admin' ? 'tag-blue' : 'tag-green'}}">{{roleLabel}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 管理功能入口 (仓库管理员可见) -->
+  <view class="section" wx:if="{{isWarehouseAdmin}}">
+    <view class="section-title">仓库管理</view>
+    <view class="grid-menu">
+      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/category/category">
+        <view class="menu-icon icon-category">📦</view>
+        <text class="menu-text">类型管理</text>
+      </view>
+      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/inventory/inventory">
+        <view class="menu-icon icon-inventory">📋</view>
+        <text class="menu-text">库存管理</text>
+      </view>
+      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/inventory-log/inventory-log">
+        <view class="menu-icon icon-log">📊</view>
+        <text class="menu-text">变更记录</text>
+      </view>
+      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/borrow-approval/borrow-approval">
+        <view class="menu-icon icon-approval">✅</view>
+        <text class="menu-text">借用审批</text>
+        <view class="badge" wx:if="{{pendingCount > 0}}">{{pendingCount}}</view>
+      </view>
+      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/collect-confirm/collect-confirm">
+        <view class="menu-icon icon-collect">📥</view>
+        <text class="menu-text">领取确认</text>
+      </view>
+      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/return-confirm/return-confirm">
+        <view class="menu-icon icon-return">📤</view>
+        <text class="menu-text">归还确认</text>
+      </view>
+      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/backfill/backfill">
+        <view class="menu-icon icon-backfill">📝</view>
+        <text class="menu-text">补录领取</text>
+      </view>
+      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/users/users">
+        <view class="menu-icon icon-users">👥</view>
+        <text class="menu-text">用户管理</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 货物浏览入口 -->
+  <view class="section">
+    <view class="section-title">货物浏览</view>
+    <view class="grid-menu">
+      <view class="menu-item" bindtap="goPage" data-url="/pages/item/list/list">
+        <view class="menu-icon icon-items">🏷️</view>
+        <text class="menu-text">货物列表</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 借用功能入口 -->
+  <view class="section">
+    <view class="section-title">我的借用</view>
+    <view class="grid-menu">
+      <view class="menu-item" bindtap="goPage" data-url="/pages/borrow/my-borrows/my-borrows">
+        <view class="menu-icon icon-my">📋</view>
+        <text class="menu-text">当前借用</text>
+      </view>
+      <view class="menu-item" bindtap="goPage" data-url="/pages/borrow/history/history">
+        <view class="menu-icon icon-history">📜</view>
+        <text class="menu-text">借用记录</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 退出登录 -->
+  <view class="logout-section">
+    <button class="btn-default" bindtap="onLogout">退出登录</button>
+  </view>
+</view>

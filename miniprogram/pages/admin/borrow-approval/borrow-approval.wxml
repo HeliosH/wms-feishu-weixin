@@ -1,0 +1,32 @@
+<view class="container">
+  <view class="record-list">
+    <view class="record-card card" wx:for="{{records}}" wx:key="_id">
+      <view class="record-header">
+        <text class="record-item-name">{{item.item_name}}</text>
+        <text class="tag tag-orange">待审批</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">申请人</text>
+        <text class="record-value">{{item.borrower_name}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">数量</text>
+        <text class="record-value">{{item.quantity}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">申请时间</text>
+        <text class="record-value">{{item.apply_time_str}}</text>
+      </view>
+      <view class="record-row" wx:if="{{item.apply_remark}}">
+        <text class="record-label">备注</text>
+        <text class="record-value">{{item.apply_remark}}</text>
+      </view>
+      <view class="record-actions">
+        <button class="btn-danger action-btn" bindtap="onReject" data-id="{{item._id}}" size="mini">驳回</button>
+        <button class="btn-primary action-btn" bindtap="onApprove" data-id="{{item._id}}" size="mini">通过</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-tip" wx:if="{{records.length === 0}}">暂无待审批记录</view>
+</view>

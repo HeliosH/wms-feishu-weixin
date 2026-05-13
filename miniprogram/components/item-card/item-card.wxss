@@ -1,0 +1,47 @@
+.item-card { margin-bottom: 16rpx; }
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.item-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+}
+
+.item-meta { margin-bottom: 16rpx; }
+
+.item-category {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.item-stock {
+  display: flex;
+  justify-content: space-around;
+  background-color: #fafafa;
+  border-radius: 8rpx;
+  padding: 16rpx 0;
+}
+
+.stock-item { display: flex; flex-direction: column; align-items: center; }
+
+.stock-label {
+  font-size: 22rpx;
+  color: #999;
+  margin-bottom: 6rpx;
+}
+
+.stock-value {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.stock-value.available { color: #52c41a; }
+.stock-value.borrowed { color: #faad14; }
+.stock-value.total { color: #1890ff; }

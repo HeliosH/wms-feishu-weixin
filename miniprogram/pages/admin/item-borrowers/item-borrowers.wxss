@@ -1,0 +1,50 @@
+.item-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.item-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.item-stock {
+  font-size: 26rpx;
+  color: #faad14;
+}
+
+.borrower-card {
+  margin-bottom: 16rpx;
+}
+
+.borrower-row {
+  display: flex;
+  padding: 6rpx 0;
+}
+
+.borrower-label {
+  width: 160rpx;
+  font-size: 26rpx;
+  color: #999;
+}
+
+.borrower-value {
+  flex: 1;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.photo-row {
+  display: flex;
+  align-items: flex-start;
+  padding: 12rpx 0;
+}
+
+.collect-photo {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 8rpx;
+}

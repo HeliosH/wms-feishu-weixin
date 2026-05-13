@@ -1,0 +1,111 @@
+.card-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.selected-item {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 0;
+  background-color: #f6ffed;
+  border-radius: 8rpx;
+  padding: 16rpx 20rpx;
+  margin-bottom: 16rpx;
+}
+
+.item-label {
+  font-size: 26rpx;
+  color: #999;
+  margin-right: 12rpx;
+}
+
+.item-name {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: bold;
+  flex: 1;
+}
+
+.item-stock {
+  font-size: 24rpx;
+  color: #52c41a;
+}
+
+.form-item.vertical {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 160rpx;
+  font-size: 28rpx;
+  margin-top: 12rpx;
+  padding: 16rpx;
+  background-color: #fafafa;
+  border-radius: 8rpx;
+  box-sizing: border-box;
+}
+
+.picker-value {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.picker-value.placeholder {
+  color: #c0c0c0;
+}
+
+.submit-btn {
+  margin-top: 40rpx;
+}
+
+.photo-section {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.photo-hint {
+  font-size: 22rpx;
+  color: #ff4d4f;
+  display: block;
+  margin-bottom: 16rpx;
+}
+
+.photo-area {
+  width: 300rpx;
+  height: 300rpx;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.photo-preview {
+  width: 100%;
+  height: 100%;
+}
+
+.photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fafafa;
+  border: 2rpx dashed #d9d9d9;
+  border-radius: 8rpx;
+}
+
+.photo-icon {
+  font-size: 48rpx;
+  color: #999;
+}
+
+.photo-text {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 6rpx;
+}

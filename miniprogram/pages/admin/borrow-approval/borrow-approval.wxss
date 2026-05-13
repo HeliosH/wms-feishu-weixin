@@ -1,0 +1,45 @@
+.record-card { margin-bottom: 16rpx; }
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.record-item-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.record-row {
+  display: flex;
+  padding: 6rpx 0;
+}
+
+.record-label {
+  width: 140rpx;
+  font-size: 26rpx;
+  color: #999;
+}
+
+.record-value {
+  flex: 1;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.record-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16rpx;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.action-btn {
+  min-width: 140rpx;
+  font-size: 26rpx;
+}

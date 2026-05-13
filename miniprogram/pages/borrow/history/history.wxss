@@ -1,0 +1,51 @@
+.filter-bar {
+  margin-bottom: 20rpx;
+}
+
+.filter-btn {
+  background-color: #fff;
+  padding: 16rpx 24rpx;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  color: #666;
+  display: inline-block;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.record-card {
+  margin-bottom: 16rpx;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.record-item-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.record-row {
+  display: flex;
+  padding: 8rpx 0;
+}
+
+.record-label {
+  width: 160rpx;
+  font-size: 26rpx;
+  color: #999;
+}
+
+.record-value {
+  flex: 1;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.record-value.reject {
+  color: #ff4d4f;
+}

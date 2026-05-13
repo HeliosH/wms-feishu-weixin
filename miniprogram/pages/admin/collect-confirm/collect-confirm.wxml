@@ -1,0 +1,34 @@
+<view class="container">
+  <view class="record-list">
+    <view class="record-card card" wx:for="{{records}}" wx:key="_id">
+      <view class="record-header">
+        <text class="record-item-name">{{item.item_name}}</text>
+        <text class="tag tag-blue">待领取</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">借用人</text>
+        <text class="record-value">{{item.borrower_name}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">数量</text>
+        <text class="record-value">{{item.quantity}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">审批时间</text>
+        <text class="record-value">{{item.approve_time_str}}</text>
+      </view>
+
+      <!-- 申请人拍照留档 -->
+      <view class="photo-section" wx:if="{{item.apply_photo}}">
+        <text class="photo-label">申请人领取照片</text>
+        <image class="existing-photo" src="{{item.apply_photo}}" mode="aspectFill" bindtap="previewPhoto" data-url="{{item.apply_photo}}" />
+      </view>
+
+      <view class="record-actions">
+        <button class="btn-primary action-btn" bindtap="onConfirm" data-id="{{item._id}}" size="mini">确认领取</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-tip" wx:if="{{records.length === 0}}">暂无待领取记录</view>
+</view>

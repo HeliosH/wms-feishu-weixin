@@ -1,0 +1,33 @@
+<view class="container">
+  <view class="item-info card">
+    <text class="item-name">{{itemName}}</text>
+    <text class="item-stock">借出中: {{borrowers.length}} 人</text>
+  </view>
+
+  <view class="borrower-list">
+    <view class="borrower-card card" wx:for="{{borrowers}}" wx:key="_id">
+      <view class="borrower-row">
+        <text class="borrower-label">借用人</text>
+        <text class="borrower-value">{{item.borrower_name}}</text>
+      </view>
+      <view class="borrower-row">
+        <text class="borrower-label">数量</text>
+        <text class="borrower-value">{{item.quantity}}</text>
+      </view>
+      <view class="borrower-row">
+        <text class="borrower-label">领取时间</text>
+        <text class="borrower-value">{{item.collect_time_str}}</text>
+      </view>
+      <view class="borrower-row">
+        <text class="borrower-label">领取确认人</text>
+        <text class="borrower-value">{{item.collect_operator || '-'}}</text>
+      </view>
+      <view class="photo-row" wx:if="{{item.collect_photo}}">
+        <text class="borrower-label">领取照片</text>
+        <image class="collect-photo" src="{{item.collect_photo}}" mode="aspectFill" bindtap="previewPhoto" data-url="{{item.collect_photo}}" />
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-tip" wx:if="{{borrowers.length === 0}}">该货物暂无借用人</view>
+</view>

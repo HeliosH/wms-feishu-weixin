@@ -1,0 +1,96 @@
+.record-card { margin-bottom: 16rpx; }
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.record-item-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.record-row {
+  display: flex;
+  padding: 6rpx 0;
+}
+
+.record-label {
+  width: 140rpx;
+  font-size: 26rpx;
+  color: #999;
+}
+
+.record-value {
+  flex: 1;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.photo-section {
+  margin: 16rpx 0;
+  padding-top: 12rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.photo-label {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.existing-photo {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 8rpx;
+}
+
+.photo-area {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.photo-preview {
+  width: 100%;
+  height: 100%;
+}
+
+.photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fafafa;
+  border: 2rpx dashed #d9d9d9;
+  border-radius: 8rpx;
+}
+
+.photo-icon {
+  font-size: 48rpx;
+  color: #999;
+}
+
+.photo-text {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 6rpx;
+}
+
+.record-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12rpx;
+}
+
+.action-btn {
+  min-width: 180rpx;
+  font-size: 26rpx;
+}

@@ -1,0 +1,43 @@
+<view class="container">
+  <!-- 筛选栏 -->
+  <view class="filter-bar">
+    <picker mode="selector" range="{{statusOptions}}" range-key="label" bindchange="onStatusFilter">
+      <view class="filter-btn">{{selectedStatusLabel}} ▼</view>
+    </picker>
+  </view>
+
+  <view class="record-list">
+    <view class="record-card card" wx:for="{{records}}" wx:key="_id">
+      <view class="record-header">
+        <text class="record-item-name">{{item.item_name}}</text>
+        <text class="tag {{item.statusTagClass}}">{{item.statusLabel}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">数量</text>
+        <text class="record-value">{{item.quantity}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">申请时间</text>
+        <text class="record-value">{{item.apply_time_str}}</text>
+      </view>
+      <view class="record-row" wx:if="{{item.approve_time}}">
+        <text class="record-label">审批时间</text>
+        <text class="record-value">{{item.approve_time_str}}</text>
+      </view>
+      <view class="record-row" wx:if="{{item.collect_time}}">
+        <text class="record-label">领取时间</text>
+        <text class="record-value">{{item.collect_time_str}}</text>
+      </view>
+      <view class="record-row" wx:if="{{item.return_time}}">
+        <text class="record-label">归还时间</text>
+        <text class="record-value">{{item.return_time_str}}</text>
+      </view>
+      <view class="record-row" wx:if="{{item.reject_reason}}">
+        <text class="record-label">驳回原因</text>
+        <text class="record-value reject">{{item.reject_reason}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-tip" wx:if="{{!loading && records.length === 0}}">暂无记录</view>
+</view>

@@ -1,0 +1,9 @@
+<view class="photo-upload">
+  <view class="photo-area" bindtap="onTakePhoto">
+    <image class="photo-preview" wx:if="{{photoUrl}}" src="{{photoUrl}}" mode="aspectFill" />
+    <view class="photo-placeholder" wx:else>
+      <text class="photo-icon">+</text>
+      <text class="photo-text">拍照</text>
+    </view>
+  </view>
+</view>

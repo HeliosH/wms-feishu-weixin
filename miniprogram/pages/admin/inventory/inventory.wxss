@@ -1,0 +1,56 @@
+.card-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.form-item.vertical {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 120rpx;
+  font-size: 28rpx;
+  margin-top: 12rpx;
+  padding: 16rpx;
+  background-color: #fafafa;
+  border-radius: 8rpx;
+  box-sizing: border-box;
+}
+
+.picker-val {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.picker-val.placeholder {
+  color: #c0c0c0;
+}
+
+.save-btn {
+  margin-top: 30rpx;
+}
+
+.current-stock {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background-color: #f6ffed;
+  border-radius: 8rpx;
+  margin-bottom: 20rpx;
+}
+
+.stock-label {
+  font-size: 28rpx;
+  color: #666;
+  margin-right: 16rpx;
+}
+
+.stock-val {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #52c41a;
+}

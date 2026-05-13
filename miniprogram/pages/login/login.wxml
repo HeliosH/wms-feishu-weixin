@@ -1,0 +1,17 @@
+<view class="login-page">
+  <view class="login-header">
+    <image class="logo" src="/images/logo.png" mode="aspectFit" />
+    <text class="title">库存管理系统</text>
+    <text class="subtitle">仓库管理 · 借用申请 · 审批确认</text>
+  </view>
+
+  <view class="login-body">
+    <button class="login-btn" bindtap="onLogin" loading="{{loading}}" disabled="{{loading}}">
+      微信一键登录
+    </button>
+  </view>
+
+  <view class="login-footer">
+    <text class="footer-text">首次登录将自动注册为借用人员</text>
+  </view>
+</view>

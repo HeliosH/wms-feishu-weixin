@@ -1,0 +1,13 @@
+.photo-upload { padding: 12rpx 0; }
+.photo-area { width: 200rpx; height: 200rpx; border-radius: 8rpx; overflow: hidden; }
+.photo-preview { width: 100%; height: 100%; }
+.photo-placeholder {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background-color: #fafafa;
+  border: 2rpx dashed #d9d9d9;
+  border-radius: 8rpx;
+}
+.photo-icon { font-size: 48rpx; color: #999; }
+.photo-text { font-size: 22rpx; color: #999; margin-top: 6rpx; }

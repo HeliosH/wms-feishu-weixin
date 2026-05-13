@@ -1,0 +1,46 @@
+<view class="container">
+  <view class="record-list">
+    <view class="record-card card" wx:for="{{records}}" wx:key="_id">
+      <view class="record-header">
+        <text class="record-item-name">{{item.item_name}}</text>
+        <text class="tag tag-green">待归还</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">借用人</text>
+        <text class="record-value">{{item.borrower_name}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">数量</text>
+        <text class="record-value">{{item.quantity}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">领取时间</text>
+        <text class="record-value">{{item.collect_time_str}}</text>
+      </view>
+
+      <!-- 领取照片 -->
+      <view class="photo-section" wx:if="{{item.collect_photo}}">
+        <text class="photo-label">领取照片</text>
+        <image class="existing-photo" src="{{item.collect_photo}}" mode="aspectFill" bindtap="previewPhoto" data-url="{{item.collect_photo}}" />
+      </view>
+
+      <!-- 归还拍照 -->
+      <view class="photo-section">
+        <text class="photo-label">归还拍照留档</text>
+        <view class="photo-area" bindtap="onTakePhoto" data-id="{{item._id}}" data-index="{{index}}">
+          <image class="photo-preview" wx:if="{{item.returnPhotoUrl}}" src="{{item.returnPhotoUrl}}" mode="aspectFill" />
+          <view class="photo-placeholder" wx:else>
+            <text class="photo-icon">+</text>
+            <text class="photo-text">拍照</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="record-actions">
+        <button class="btn-primary action-btn" bindtap="onConfirm" data-id="{{item._id}}" data-index="{{index}}" size="mini">确认归还</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-tip" wx:if="{{records.length === 0}}">暂无待归还记录</view>
+</view>

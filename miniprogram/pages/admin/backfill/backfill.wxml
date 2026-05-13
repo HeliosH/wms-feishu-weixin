@@ -1,0 +1,59 @@
+<view class="container">
+  <view class="card">
+    <view class="card-title">补录领取记录</view>
+    <text class="card-desc">将已领取的货物补录入系统，结果与正常借用流程一致</text>
+
+    <!-- 选择货物 -->
+    <view class="form-item">
+      <text class="form-label">货物</text>
+      <picker mode="selector" range="{{itemNames}}" bindchange="onItemPick">
+        <text class="picker-val {{selectedItemName ? '' : 'placeholder'}}">{{selectedItemName || '请选择货物'}}</text>
+      </picker>
+    </view>
+
+    <!-- 选择借用人 -->
+    <view class="form-item">
+      <text class="form-label">借用人</text>
+      <picker mode="selector" range="{{userNames}}" bindchange="onUserPick">
+        <text class="picker-val {{selectedUserName ? '' : 'placeholder'}}">{{selectedUserName || '请选择借用人'}}</text>
+      </picker>
+    </view>
+
+    <!-- 借用数量 -->
+    <view class="form-item">
+      <text class="form-label">数量</text>
+      <input class="form-input" type="number" placeholder="请输入数量" value="{{quantity}}" bindinput="onQuantityInput" />
+    </view>
+
+    <!-- 领取日期 -->
+    <view class="form-item">
+      <text class="form-label">领取日期</text>
+      <picker mode="date" value="{{applyDate}}" bindchange="onDatePick">
+        <text class="picker-val">{{applyDate || '请选择领取日期'}}</text>
+      </picker>
+    </view>
+
+    <!-- 拍照留档 -->
+    <view class="photo-section">
+      <text class="form-label">领取拍照留档</text>
+      <text class="photo-hint">管理员补录时拍照，证明货物已被借用人领取</text>
+      <view class="photo-area" bindtap="onTakePhoto">
+        <image class="photo-preview" wx:if="{{photoUrl}}" src="{{photoUrl}}" mode="aspectFill" />
+        <view class="photo-placeholder" wx:else>
+          <text class="photo-icon">+</text>
+          <text class="photo-text">拍照</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 备注 -->
+    <view class="form-item vertical">
+      <text class="form-label">备注</text>
+      <textarea class="form-textarea" placeholder="补录原因备注" value="{{remark}}" bindinput="onRemarkInput" maxlength="200" />
+    </view>
+  </view>
+
+  <button class="btn-primary submit-btn" bindtap="onSubmit" loading="{{submitting}}" disabled="{{submitting}}">
+    确认补录
+  </button>
+</view>

@@ -1,0 +1,12 @@
+{
+  "feishu": {
+    "appId": "",
+    "appSecret": "",
+    "bitableAppToken": "",
+    "tableUsers": "",
+    "tableCategories": "",
+    "tableItems": "",
+    "tableBorrowRecords": "",
+    "tableInventoryLogs": ""
+  }
+}

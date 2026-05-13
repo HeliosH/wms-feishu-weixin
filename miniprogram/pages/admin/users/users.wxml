@@ -1,0 +1,48 @@
+<view class="container">
+  <view class="user-list">
+    <view class="user-card card" wx:for="{{users}}" wx:key="_id">
+      <view class="user-header">
+        <image class="user-avatar" src="{{item.avatar_url || '/images/default-avatar.png'}}" mode="aspectFill" />
+        <view class="user-main">
+          <view class="user-name-row">
+            <text class="user-name">{{item.name || '未设置姓名'}}</text>
+            <text class="tag {{roleTagClass}}" wx:for="{{item.roleTags}}" wx:key="*this" wx:for-item="rt">{{rt.label}}</text>
+            <text class="tag tag-gray" wx:if="{{item.status === 'inactive'}}">已禁用</text>
+          </view>
+          <text class="user-openid">ID: {{item.openid}}</text>
+        </view>
+      </view>
+
+      <view class="user-actions" wx:if="{{!item.isPureAdmin}}">
+        <text class="action-btn role-btn" bindtap="onEditRole" data-index="{{index}}">修改角色</text>
+        <text class="action-btn status-btn {{item.status === 'active' ? 'disable' : 'enable'}}"
+          bindtap="onToggleStatus" data-openid="{{item.openid}}" data-status="{{item.status}}">
+          {{item.status === 'active' ? '禁用' : '启用'}}
+        </text>
+      </view>
+      <view class="admin-notice" wx:if="{{item.isPureAdmin}}">
+        <text class="admin-text">管理员（不可变更）</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-tip" wx:if="{{users.length === 0}}">暂无用户</view>
+
+  <!-- 角色编辑弹窗 -->
+  <view class="modal-mask" wx:if="{{showRoleModal}}" bindtap="onCloseModal">
+    <view class="modal-content" catchtap="">
+      <view class="modal-title">修改角色 - {{editUserName}}</view>
+      <view class="role-check-list">
+        <label class="role-check-item" wx:for="{{roleCheckList}}" wx:key="value">
+          <checkbox value="{{item.value}}" checked="{{item.checked}}" bindtap="onRoleToggle" data-index="{{index}}" />
+          <text class="role-check-label">{{item.label}}</text>
+        </label>
+      </view>
+      <text class="role-hint">可同时勾选多个角色</text>
+      <view class="modal-btns">
+        <button class="btn-default modal-btn" bindtap="onCloseModal">取消</button>
+        <button class="btn-primary modal-btn" bindtap="onSaveRole">保存</button>
+      </view>
+    </view>
+  </view>
+</view>

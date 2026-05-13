@@ -1,0 +1,64 @@
+<view class="container">
+  <!-- 新增/编辑货物 -->
+  <view class="card" wx:if="{{!isAdjust}}">
+    <view class="card-title">{{isEdit ? '编辑货物' : '新增货物'}}</view>
+
+    <view class="form-item">
+      <text class="form-label">名称</text>
+      <input class="form-input" placeholder="请输入货物名称" value="{{formName}}" bindinput="onNameInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">类型</text>
+      <picker mode="selector" range="{{categoryNames}}" bindchange="onCategoryPick">
+        <text class="picker-val {{formCategoryName ? '' : 'placeholder'}}">
+          {{formCategoryName || '请选择类型'}}
+        </text>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">总数量</text>
+      <input class="form-input" type="number" placeholder="请输入数量" value="{{formQuantity}}" bindinput="onQuantityInput" wx:if="{{!isEdit}}" />
+      <text class="form-input" wx:if="{{isEdit}}">{{formQuantity}} (编辑请使用库存调整)</text>
+    </view>
+
+    <view class="form-item vertical">
+      <text class="form-label">描述</text>
+      <textarea class="form-textarea" placeholder="请输入描述" value="{{formDesc}}" bindinput="onDescInput" />
+    </view>
+
+    <button class="btn-primary save-btn" bindtap="onSave" loading="{{saving}}" disabled="{{saving}}">保存</button>
+    <button class="btn-default save-btn" wx:if="{{isEdit}}" bindtap="switchToAdjust">库存调整</button>
+  </view>
+
+  <!-- 库存调整 -->
+  <view class="card" wx:if="{{isAdjust}}">
+    <view class="card-title">库存调整 - {{itemName}}</view>
+
+    <view class="current-stock">
+      <text class="stock-label">当前可用库存:</text>
+      <text class="stock-val">{{currentAvailable}}</text>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">调整类型</text>
+      <picker mode="selector" range="{{adjustTypes}}" range-key="label" bindchange="onAdjustTypePick">
+        <text class="picker-val">{{adjustTypeLabel}}</text>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">数量</text>
+      <input class="form-input" type="number" placeholder="请输入数量" value="{{adjustQty}}" bindinput="onAdjustQtyInput" />
+    </view>
+
+    <view class="form-item vertical">
+      <text class="form-label">原因</text>
+      <textarea class="form-textarea" placeholder="请输入调整原因" value="{{adjustReason}}" bindinput="onAdjustReasonInput" />
+    </view>
+
+    <button class="btn-primary save-btn" bindtap="onAdjust" loading="{{saving}}" disabled="{{saving}}">确认调整</button>
+    <button class="btn-default save-btn" bindtap="backToEdit">返回编辑</button>
+  </view>
+</view>

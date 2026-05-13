@@ -1,0 +1,71 @@
+.tab-bar {
+  display: flex;
+  background-color: #fff;
+  border-radius: 12rpx;
+  margin-bottom: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  font-size: 28rpx;
+  color: #666;
+  position: relative;
+}
+
+.tab.active {
+  color: #1890ff;
+  font-weight: bold;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 30%;
+  right: 30%;
+  height: 4rpx;
+  background-color: #1890ff;
+  border-radius: 2rpx;
+}
+
+.record-card {
+  margin-bottom: 16rpx;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.record-item-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.record-row {
+  display: flex;
+  padding: 8rpx 0;
+}
+
+.record-label {
+  width: 160rpx;
+  font-size: 26rpx;
+  color: #999;
+}
+
+.record-value {
+  flex: 1;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.record-value.reject {
+  color: #ff4d4f;
+}
