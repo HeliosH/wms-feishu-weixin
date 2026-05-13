@@ -1,0 +1,10 @@
+.user-card { margin-bottom: 16rpx; }
+
+.user-header { display: flex; align-items: center; margin-bottom: 16rpx; }
+.user-avatar { width: 72rpx; height: 72rpx; border-radius: 50%; margin-right: 20rpx; background-color: #e8e8e8; }
+.user-main { flex: 1; }
+.user-name { font-size: 30rpx; font-weight: bold; color: #333; display: block; margin-bottom: 8rpx; }
+.user-openid { font-size: 22rpx; color: #999; }
+
+.user-actions { display: flex; justify-content: flex-end; gap: 16rpx; padding-top: 16rpx; border-top: 1rpx solid #f0f0f0; }
+.action-btn { min-width: 140rpx; font-size: 26rpx; }

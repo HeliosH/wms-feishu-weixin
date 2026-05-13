@@ -29,6 +29,14 @@ function toggleUserStatus(openid, status) {
   return callFunction('userManage', { action: 'toggleUserStatus', openid, status })
 }
 
+function applyRole(name) {
+  return callFunction('userManage', { action: 'applyRole', name })
+}
+
+function approveRole(openid, approved, role) {
+  return callFunction('userManage', { action: 'approveRole', openid, approved, role })
+}
+
 // 货物类型相关
 function getCategoryList() {
   return callFunction('itemManage', { action: 'getCategoryList' })
@@ -118,6 +126,8 @@ module.exports = {
   getUserList,
   updateUserRole,
   toggleUserStatus,
+  applyRole,
+  approveRole,
   getCategoryList,
   createCategory,
   updateCategory,

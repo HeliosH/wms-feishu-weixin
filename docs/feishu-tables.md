@@ -10,7 +10,7 @@
 | `name` | 文本 | — | 用户姓名 |
 | `avatar_url` | 文本 | — | 头像URL，可空 |
 | `role` | 多选 | `admin` / `warehouse_admin` / `borrower` | 角色（可多选）：同一个人可同时为仓库管理员和借用人员 |
-| `status` | 单选 | `active` / `inactive` | 启用/禁用 |
+| `status` | 单选 | `pending` / `pending_review` / `active` / `inactive` | pending=新注册 / pending_review=已申请待审批 / active=正常 / inactive=已禁用 |
 | `created_at` | 数字 | 整数 | 创建时间（毫秒时间戳） |
 
 ---

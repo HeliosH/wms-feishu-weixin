@@ -1,0 +1,26 @@
+<view class="container">
+  <view class="card">
+    <view class="card-title">申请借用权限</view>
+    <text class="card-desc">提交申请后，等待管理员审批</text>
+
+    <view class="form-item">
+      <text class="form-label">姓名</text>
+      <input class="form-input" placeholder="请输入你的姓名" value="{{name}}" bindinput="onNameInput" maxlength="20" />
+    </view>
+  </view>
+
+  <view class="status-card card" wx:if="{{status === 'pending_review'}}">
+    <text class="status-icon">⏳</text>
+    <text class="status-text">申请已提交，等待审批中</text>
+  </view>
+
+  <view class="status-card card" wx:if="{{status === 'active' || hasBorrower}}">
+    <text class="status-icon">✅</text>
+    <text class="status-text">你已经是借用人员</text>
+  </view>
+
+  <button class="btn-primary submit-btn" bindtap="onSubmit" loading="{{submitting}}" disabled="{{submitting || hasBorrower}}"
+    wx:if="{{status !== 'pending_review'}}">
+    {{hasBorrower ? '已是借用人员' : '提交申请'}}
+  </button>
+</view>

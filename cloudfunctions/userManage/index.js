@@ -72,18 +72,53 @@ async function login(openid) {
     return user
   }
 
-  // 新用户默认为borrower角色
+  // 新用户注册 — 无角色，待申请
   const createRes = await bitableRequest('POST', `/tables/${USERS_TABLE_ID}/records`, {
     fields: {
       openid,
       name: '',
       avatar_url: '',
-      role: ['borrower'],
-      status: 'active',
+      role: [],
+      status: 'pending',
       created_at: Date.now()
     }
   })
   return fromRecord(createRes.record)
+}
+
+// 申请借用人员权限
+async function applyRole(openid, name) {
+  const listRes = await bitableRequest('GET', `/tables/${USERS_TABLE_ID}/records`, null, {
+    filter: `CurrentValue.[openid] = "${openid}"`,
+    page_size: 1
+  })
+  if (!listRes.items || listRes.items.length === 0) throw new Error('用户不存在')
+
+  const user = fromRecord(listRes.items[0])
+  const roles = Array.isArray(user.role) ? user.role : []
+  if (roles.includes('borrower')) throw new Error('你已经是借用人员，无需重复申请')
+  if (user.status === 'pending_review') throw new Error('已有待审批的申请，请耐心等待')
+
+  await bitableRequest('PUT', `/tables/${USERS_TABLE_ID}/records/${user._id}`, {
+    fields: { name: name || user.name, status: 'pending_review' }
+  })
+  return { success: true }
+}
+
+// 审批权限申请
+async function approveRole(targetOpenid, approved, role, operatorOpenid) {
+  const targetUser = await findUserByOpenid(targetOpenid)
+  if (!targetUser) throw new Error('用户不存在')
+  if (targetUser.status !== 'pending_review') throw new Error('该用户没有待审批的申请')
+
+  const resultRole = Array.isArray(role) ? role : [role]
+  await bitableRequest('PUT', `/tables/${USERS_TABLE_ID}/records/${targetUser._id}`, {
+    fields: {
+      status: approved ? 'active' : 'pending',
+      role: approved ? resultRole : []
+    }
+  })
+  return { success: true }
 }
 
 // 获取用户列表
@@ -163,6 +198,12 @@ exports.main = async (event, context) => {
         break
       case 'toggleUserStatus':
         result = await toggleUserStatus(event.openid, event.status)
+        break
+      case 'applyRole':
+        result = await applyRole(callerOpenid, event.name)
+        break
+      case 'approveRole':
+        result = await approveRole(event.openid, event.approved, event.role, callerOpenid)
         break
       default:
         throw new Error(`未知操作: ${action}`)

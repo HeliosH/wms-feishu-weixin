@@ -1,0 +1,19 @@
+<view class="container">
+  <view class="user-list">
+    <view class="user-card card" wx:for="{{pendingUsers}}" wx:key="_id">
+      <view class="user-header">
+        <image class="user-avatar" src="{{item.avatar_url || '/images/default-avatar.png'}}" mode="aspectFill" />
+        <view class="user-main">
+          <text class="user-name">{{item.name || '未设置姓名'}}</text>
+          <text class="user-openid">ID: {{item.openid}}</text>
+        </view>
+      </view>
+      <view class="user-actions">
+        <button class="btn-danger action-btn" bindtap="onReject" data-index="{{index}}" size="mini">驳回</button>
+        <button class="btn-primary action-btn" bindtap="onApprove" data-index="{{index}}" size="mini">通过</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-tip" wx:if="{{pendingUsers.length === 0}}">暂无待审批的权限申请</view>
+</view>
