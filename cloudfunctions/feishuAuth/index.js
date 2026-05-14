@@ -37,7 +37,7 @@ async function getTenantAccessToken() {
     app_id: appId,
     app_secret: appSecret
   }, {
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json; charset=utf-8' }
   })
 
   if (res.data.code !== 0) {

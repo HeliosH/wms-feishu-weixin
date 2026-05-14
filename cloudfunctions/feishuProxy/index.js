@@ -38,7 +38,7 @@ async function getTenantAccessToken() {
   const res = await axios.post('https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal', {
     app_id: appId,
     app_secret: appSecret
-  }, { headers: { 'Content-Type': 'application/json' } })
+  }, { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
 
   if (res.data.code !== 0) {
     throw new Error(`获取飞书token失败: ${res.data.msg}`)
@@ -66,7 +66,7 @@ async function bitableRequest(method, path, data = null, params = null) {
     url,
     headers: {
       'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json; charset=utf-8'
     }
   }
   if (data) config.data = data

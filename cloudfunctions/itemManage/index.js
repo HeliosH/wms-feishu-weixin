@@ -29,7 +29,7 @@ async function getTenantAccessToken() {
   }
   const res = await axios.post('https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal', {
     app_id: getConfig('FEISHU_APP_ID'), app_secret: getConfig('FEISHU_APP_SECRET')
-  }, { headers: { 'Content-Type': 'application/json' } })
+  }, { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
   if (res.data.code !== 0) throw new Error(`获取飞书token失败: ${res.data.msg}`)
   const token = res.data.tenant_access_token
   const expireAt = Math.floor(Date.now() / 1000) + (res.data.expire || 7200) - 300
@@ -45,7 +45,7 @@ async function bitableRequest(method, path, data = null, params = null) {
   const token = await getTenantAccessToken()
   const config = {
     method, url: `${FEISHU_BASE}/${getAppToken()}${path}`,
-    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json; charset=utf-8' }
   }
   if (data) config.data = data
   if (params) config.params = params
