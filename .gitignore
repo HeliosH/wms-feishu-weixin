@@ -23,5 +23,12 @@ cloudfunctions/*/common/
 Thumbs.db
 *.log
 
+# 服务端环境变量（含敏感凭证）
+server/.env
+
+# 服务端上传文件
+server/uploads/*
+!server/uploads/.gitkeep
+
 # 微信小程序
 *.wxapkg

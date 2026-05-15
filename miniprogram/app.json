@@ -26,6 +26,5 @@
     "navigationBarTitleText": "仓仓",
     "navigationBarTextStyle": "white"
   },
-  "sitemapLocation": "sitemap.json",
-  "cloud": true
+  "sitemapLocation": "sitemap.json"
 }

@@ -1,6 +1,9 @@
 const api = require('./api')
 
 let _userInfo = null
+let _token = ''
+
+const TOKEN_KEY = 'auth_token'
 
 function getUserInfo() {
   return _userInfo
@@ -35,13 +38,31 @@ function checkLogin() {
   return true
 }
 
+function getToken() {
+  return _token
+}
+
+function initToken() {
+  _token = wx.getStorageSync(TOKEN_KEY) || ''
+}
+
 async function doLogin() {
-  const res = await api.login()
-  setUserInfo(res)
-  return res
+  const code = await new Promise((resolve, reject) => {
+    wx.login({ success: res => resolve(res.code), fail: reject })
+  })
+
+  const authData = await api.authLogin(code)
+  _token = authData.token
+  wx.setStorageSync(TOKEN_KEY, _token)
+
+  const userInfo = await api.login()
+  setUserInfo(userInfo)
+  return userInfo
 }
 
 function logout() {
+  _token = ''
+  wx.removeStorageSync(TOKEN_KEY)
   setUserInfo(null)
   wx.redirectTo({ url: '/pages/login/login' })
 }
@@ -53,5 +74,7 @@ module.exports = {
   isLoggedIn,
   checkLogin,
   doLogin,
-  logout
+  logout,
+  getToken,
+  initToken
 }

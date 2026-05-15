@@ -91,4 +91,4 @@
 - **单选**字段选项值用英文（代码按英文值判断），不要用中文
 - 时间统一用**毫秒时间戳数字**（`Date.now()` 格式），不用飞书的日期字段
 - 建完每张表后复制其 `tblXXXX` ID，填入 `cloudfunctions/feishuConfig.json`
-- 照片存微信云存储 `fileID`，飞书表里用**文本字段**存这个 ID 字符串
+- 照片由自建服务器存储，飞书表里用**文本字段**存照片 URL 字符串（如 `https://your-domain.com/uploads/2026/05/xxx.jpg`）
