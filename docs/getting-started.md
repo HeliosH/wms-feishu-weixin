@@ -2,6 +2,15 @@
 
 ---
 
+## 0. 前置准备
+
+```bash
+# 安装依赖（Node.js >= 16）
+npm install
+```
+
+---
+
 ## 1. 微信小程序注册
 
 1. 打开 [微信公众平台](https://mp.weixin.qq.com/) → 注册小程序（个人/企业）
@@ -27,7 +36,17 @@
 
 ## 4. 部署云函数
 
-在微信开发者工具中，对每个云函数目录右键 → **上传并部署**：
+云函数的业务逻辑抽取到了 `cloudfunctions/common/` 公共模块中。
+微信云开发中每个云函数是独立上传的，不能使用 `../common` 跨目录引用。
+因此部署前必须将公共模块复制到各云函数目录内：
+
+```bash
+npm run predeploy
+```
+
+该命令会将 `cloudfunctions/common/` 复制到 5 个云函数各自的 `common/` 子目录。
+
+然后在微信开发者工具中，对每个云函数目录右键 → **上传并部署**：
 
 ```
 cloudfunctions/
@@ -110,8 +129,14 @@ cloudfunctions/
 ## 9. 常用命令
 
 ```bash
-# 本地测试飞书 API
-node test/feishu-api-test.js
+# 本地集成测试（覆盖所有业务逻辑，推荐）
+npm test
+
+# 本地测试飞书 API 连通性
+npm run test:api
+
+# 部署前复制公共模块到各云函数
+npm run predeploy
 
 # 提交并推送代码
 git add -A && git commit -m "描述" && git push origin master
@@ -123,8 +148,10 @@ git add -A && git commit -m "描述" && git push origin master
 
 | 问题 | 解决 |
 |------|------|
+| 云函数报 `Cannot find module './common'` | 未执行 `npm run predeploy`，运行后再上传 |
 | 飞书中文乱码 | 确认云函数已重新部署（charset=utf-8 修复） |
 | 云函数报 1002 | Bitable 未授权 → 多维表格分享给应用 |
 | 云函数报 403 | 应用无编辑权限 → 分享时选"可编辑" |
 | 字段类型错误 | 关联字段改文本字段 |
 | 登录后看不到任何功能 | 首次登录无角色，需先申请权限或管理员手动分配 |
+| 本地测试报 `Cannot find module 'axios'` | 在项目根目录执行 `npm install` |

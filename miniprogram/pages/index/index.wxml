@@ -1,8 +1,13 @@
 <view class="container">
+  <!-- Logo -->
+  <view class="logo-box">
+    <image class="logo" src="/images/warehouse-logo.png" mode="aspectFit" />
+  </view>
+
   <!-- 用户信息 -->
   <view class="user-bar card">
     <view class="user-info">
-      <image class="avatar" src="{{userInfo.avatar_url || '/images/default-avatar.png'}}" mode="aspectFill" />
+      <image class="avatar" src="{{userInfo.avatar_url || '/images/warehouse-logo.png'}}" mode="aspectFill" />
       <view class="user-text">
         <text class="user-name">{{userInfo.name || '未设置姓名'}}</text>
         <text class="user-role tag {{userInfo.role === 'admin' ? 'tag-red' : userInfo.role === 'warehouse_admin' ? 'tag-blue' : 'tag-green'}}">{{roleLabel}}</text>

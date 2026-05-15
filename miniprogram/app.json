@@ -23,7 +23,7 @@
     "backgroundColor": "#F6F6F6",
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#1890FF",
-    "navigationBarTitleText": "库存管理",
+    "navigationBarTitleText": "仓仓",
     "navigationBarTextStyle": "white"
   },
   "sitemapLocation": "sitemap.json",

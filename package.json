@@ -1,0 +1,30 @@
+{
+  "name": "wms-feishu-weixin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test/local-test.js",
+    "test:api": "node test/feishu-api-test.js",
+    "predeploy": "node scripts/copy-common.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HeliosH/wms-feishu-weixin.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/HeliosH/wms-feishu-weixin/issues"
+  },
+  "homepage": "https://github.com/HeliosH/wms-feishu-weixin#readme",
+  "dependencies": {
+    "axios": "^1.16.1"
+  }
+}

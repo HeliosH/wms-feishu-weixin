@@ -2,7 +2,7 @@
   <view class="user-list">
     <view class="user-card card" wx:for="{{pendingUsers}}" wx:key="_id">
       <view class="user-header">
-        <image class="user-avatar" src="{{item.avatar_url || '/images/default-avatar.png'}}" mode="aspectFill" />
+        <image class="user-avatar" src="{{item.avatar_url || '/images/warehouse-logo.png'}}" mode="aspectFill" />
         <view class="user-main">
           <text class="user-name">{{item.name || '未设置姓名'}}</text>
           <text class="user-openid">ID: {{item.openid}}</text>

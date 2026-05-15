@@ -8,6 +8,9 @@ miniprogram_npm/
 # 云函数 node_modules（线上自动安装）
 cloudfunctions/*/node_modules/
 
+# 云函数 common/ 由 scripts/copy-common.js 自动生成
+cloudfunctions/*/common/
+
 # IDE / 编辑器
 .vscode/
 .idea/

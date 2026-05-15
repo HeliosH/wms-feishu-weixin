@@ -2,7 +2,7 @@ const fs = require('fs')
 const https = require('https')
 
 // 读配置
-const config = JSON.parse(fs.readFileSync('../cloudfunctions/feishuConfig.json', 'utf-8')).feishu
+const config = JSON.parse(fs.readFileSync(require('path').join(__dirname, '..', 'cloudfunctions', 'feishuConfig.json'), 'utf-8')).feishu
 const { appId, appSecret, bitableAppToken, tableUsers, tableCategories, tableItems, tableBorrowRecords, tableInventoryLogs } = config
 
 let token = ''

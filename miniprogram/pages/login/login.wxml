@@ -1,7 +1,7 @@
 <view class="login-page">
   <view class="login-header">
-    <image class="logo" src="/images/logo.png" mode="aspectFit" />
-    <text class="title">库存管理系统</text>
+    <image class="logo" src="/images/warehouse-logo.png" mode="aspectFit" />
+    <text class="title">仓仓</text>
     <text class="subtitle">仓库管理 · 借用申请 · 审批确认</text>
   </view>
 
