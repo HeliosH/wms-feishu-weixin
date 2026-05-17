@@ -1,5 +1,8 @@
 {
   "pages": [
+    "pages/manage/manage",
+    "pages/borrow/borrow",
+    "pages/mine/mine",
     "pages/index/index",
     "pages/login/login",
     "pages/item/list/list",
@@ -25,6 +28,26 @@
     "navigationBarBackgroundColor": "#1890FF",
     "navigationBarTitleText": "仓仓",
     "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#999999",
+    "selectedColor": "#1890FF",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/manage/manage",
+        "text": "管理"
+      },
+      {
+        "pagePath": "pages/borrow/borrow",
+        "text": "借用"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的"
+      }
+    ]
   },
   "sitemapLocation": "sitemap.json"
 }

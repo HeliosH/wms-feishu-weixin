@@ -1,26 +1,35 @@
-const auth = require('./auth')
+const token = require('./token')
 
 // 线上环境替换为真实域名，本地开发用局域网IP
-const BASE_URL = 'http://localhost:3000/api'
+const BASE_URL = 'http://localhost:8080/api'
 
 function request(method, url, data) {
+  const fullUrl = BASE_URL + url
+  console.log('[API]', method, fullUrl)
+  const headers = { 'Content-Type': 'application/json' }
+  const t = token.getToken()
+  if (t) headers['Authorization'] = 'Bearer ' + t
+
   return new Promise((resolve, reject) => {
     wx.request({
       method,
-      url: BASE_URL + url,
+      url: fullUrl,
       data,
-      header: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + auth.getToken()
-      },
+      timeout: 15000,
+      header: headers,
+      enableHttp2: false,
       success(res) {
+        console.log('[API]', method, fullUrl, res.statusCode)
         if (res.data.code === 0) {
           resolve(res.data.data)
         } else {
           reject(res.data)
         }
       },
-      fail: reject
+      fail(err) {
+        console.error('[API] FAIL', method, fullUrl, JSON.stringify(err))
+        reject(err)
+      }
     })
   })
 }
@@ -138,7 +147,7 @@ function uploadPhoto(filePath) {
       filePath,
       name: 'photo',
       header: {
-        'Authorization': 'Bearer ' + auth.getToken()
+        'Authorization': 'Bearer ' + token.getToken()
       },
       success(res) {
         try {

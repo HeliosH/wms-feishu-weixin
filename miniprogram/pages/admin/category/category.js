@@ -72,6 +72,8 @@ Page({
     this.setData({ formDesc: e.detail.value })
   },
 
+  noop() {},
+
   onCloseModal() {
     this.setData({ showModal: false })
   },

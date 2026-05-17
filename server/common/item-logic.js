@@ -27,12 +27,15 @@ async function deleteCategory(client, tableIds, recordId) {
 
 async function getItemList(client, tableIds, params = {}) {
   const queryParams = { page_size: 100 }
+  const filters = []
   if (params.categoryId) {
-    queryParams.filter = `CurrentValue.[category_id] = "${params.categoryId}"`
+    filters.push(`CurrentValue.[category_id]="${params.categoryId}"`)
   }
   if (params.status) {
-    const stFilter = `CurrentValue.[status] = "${params.status}"`
-    queryParams.filter = queryParams.filter ? `${queryParams.filter} AND ${stFilter}` : stFilter
+    filters.push(`CurrentValue.[status]="${params.status}"`)
+  }
+  if (filters.length > 0) {
+    queryParams.filter = filters.join('&&')
   }
   const res = await client.request('GET', `/tables/${tableIds.items}/records`, null, queryParams)
   return (res.items || []).map(fromRecord)
@@ -96,29 +99,22 @@ async function adjustInventory(client, tableIds, openid, data) {
       throw new Error(`不支持的变更类型: ${data.changeType}`)
   }
 
-  // Saga step 1: 更新库存（关键步骤）
   await client.request('PUT', `/tables/${tableIds.items}/records/${data.itemId}`, {
     fields: { available_quantity: afterQty }
   })
 
-  // Saga step 2: 写日志（非关键，失败不影响库存一致性）
   try {
     await client.request('POST', `/tables/${tableIds.inventoryLogs}/records`, {
       fields: {
-        item_id: data.itemId,
-        item_name: item.name,
-        change_type: data.changeType,
-        quantity: qtyChange,
-        before_quantity: beforeQty,
-        after_quantity: afterQty,
-        reason: data.reason || '',
-        operator_id: openid,
-        operator_name: data.operatorName || '',
-        created_at: Date.now()
+        item_id: data.itemId, item_name: item.name,
+        change_type: data.changeType, quantity: qtyChange,
+        before_quantity: beforeQty, after_quantity: afterQty,
+        reason: data.reason || '', operator_id: openid,
+        operator_name: data.operatorName || '', created_at: Date.now()
       }
     })
   } catch (err) {
-    console.error(`[adjustInventory] 库存日志写入失败 (item: ${data.itemId}):`, err.message)
+    console.error(`[adjustInventory] 日志写入失败:`, err.message)
   }
 
   return { success: true, beforeQuantity: beforeQty, afterQuantity: afterQty }
@@ -127,7 +123,7 @@ async function adjustInventory(client, tableIds, openid, data) {
 async function getInventoryLogs(client, tableIds, params = {}) {
   const queryParams = { page_size: 100 }
   if (params.itemId) {
-    queryParams.filter = `CurrentValue.[item_id] = "${params.itemId}"`
+    queryParams.filter = `CurrentValue.[item_id]="${params.itemId}"`
   }
   const res = await client.request('GET', `/tables/${tableIds.inventoryLogs}/records`, null, queryParams)
   return (res.items || []).map(fromRecord)
@@ -136,21 +132,13 @@ async function getInventoryLogs(client, tableIds, params = {}) {
 async function getItemBorrowers(client, tableIds, itemId) {
   const res = await client.request('GET', `/tables/${tableIds.borrowRecords}/records`, null, {
     page_size: 500,
-    filter: `CurrentValue.[item_id] = "${itemId}"`
+    filter: `CurrentValue.[item_id]="${itemId}"`
   })
   return (res.items || []).map(fromRecord).filter(r => r.status === 'collected')
 }
 
 module.exports = {
-  getCategoryList,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-  getItemList,
-  getItemDetail,
-  createItem,
-  updateItem,
-  adjustInventory,
-  getInventoryLogs,
-  getItemBorrowers
+  getCategoryList, createCategory, updateCategory, deleteCategory,
+  getItemList, getItemDetail, createItem, updateItem,
+  adjustInventory, getInventoryLogs, getItemBorrowers
 }

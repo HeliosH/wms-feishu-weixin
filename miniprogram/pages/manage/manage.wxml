@@ -1,0 +1,45 @@
+<view class="container">
+  <view class="section">
+    <view class="section-title">仓库管理</view>
+    <view class="grid-menu">
+      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/category/category">
+        <view class="menu-icon">📦</view>
+        <text class="menu-text">类型管理</text>
+      </view>
+      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/inventory/inventory">
+        <view class="menu-icon">📋</view>
+        <text class="menu-text">库存管理</text>
+      </view>
+      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/inventory-log/inventory-log">
+        <view class="menu-icon">📊</view>
+        <text class="menu-text">变更记录</text>
+      </view>
+      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/borrow-approval/borrow-approval">
+        <view class="menu-icon">✅</view>
+        <text class="menu-text">借用审批</text>
+        <view class="badge" wx:if="{{pendingBorrowCount}}">{{pendingBorrowCount}}</view>
+      </view>
+      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/permission-approval/permission-approval">
+        <view class="menu-icon">🔐</view>
+        <text class="menu-text">权限审批</text>
+        <view class="badge" wx:if="{{pendingRoleCount}}">{{pendingRoleCount}}</view>
+      </view>
+      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/collect-confirm/collect-confirm">
+        <view class="menu-icon">📥</view>
+        <text class="menu-text">领取确认</text>
+      </view>
+      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/return-confirm/return-confirm">
+        <view class="menu-icon">📤</view>
+        <text class="menu-text">归还确认</text>
+      </view>
+      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/backfill/backfill">
+        <view class="menu-icon">📝</view>
+        <text class="menu-text">补录领取</text>
+      </view>
+      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/users/users">
+        <view class="menu-icon">👥</view>
+        <text class="menu-text">用户管理</text>
+      </view>
+    </view>
+  </view>
+</view>

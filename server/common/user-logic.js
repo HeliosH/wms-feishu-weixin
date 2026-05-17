@@ -2,7 +2,7 @@ const { fromRecord } = require('./feishu-client')
 
 async function findUserByOpenid(client, usersTableId, openid) {
   const res = await client.request('GET', `/tables/${usersTableId}/records`, null, {
-    filter: `CurrentValue.[openid] = "${openid}"`,
+    filter: `CurrentValue.[openid]="${openid}"`,
     page_size: 1
   })
   if (res.items && res.items.length > 0) {

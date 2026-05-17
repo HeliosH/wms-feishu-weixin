@@ -59,6 +59,8 @@ Page({
     this.setData({ [key]: !this.data.roleCheckList[idx].checked })
   },
 
+  noop() {},
+
   onCloseModal() {
     this.setData({ showRoleModal: false })
   },

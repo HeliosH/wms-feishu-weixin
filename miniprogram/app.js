@@ -1,7 +1,7 @@
 App({
   onLaunch() {
-    const auth = require('./utils/auth')
-    auth.initToken()
+    const token = require('./utils/token')
+    token.initToken()
     this.globalData = {
       userInfo: null,
       openid: ''

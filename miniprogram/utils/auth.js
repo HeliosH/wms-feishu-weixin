@@ -1,9 +1,7 @@
 const api = require('./api')
+const token = require('./token')
 
 let _userInfo = null
-let _token = ''
-
-const TOKEN_KEY = 'auth_token'
 
 function getUserInfo() {
   return _userInfo
@@ -38,12 +36,8 @@ function checkLogin() {
   return true
 }
 
-function getToken() {
-  return _token
-}
-
-function initToken() {
-  _token = wx.getStorageSync(TOKEN_KEY) || ''
+function goHome() {
+  wx.switchTab({ url: '/pages/borrow/borrow' })
 }
 
 async function doLogin() {
@@ -51,20 +45,21 @@ async function doLogin() {
     wx.login({ success: res => resolve(res.code), fail: reject })
   })
 
+  console.log('[AUTH doLogin] wx.login code obtained')
   const authData = await api.authLogin(code)
-  _token = authData.token
-  wx.setStorageSync(TOKEN_KEY, _token)
+  console.log('[AUTH doLogin] authLogin response:', JSON.stringify(authData))
+  token.setToken(authData.token)
 
   const userInfo = await api.login()
+  console.log('[AUTH doLogin] login response userInfo:', JSON.stringify(userInfo))
   setUserInfo(userInfo)
   return userInfo
 }
 
 function logout() {
-  _token = ''
-  wx.removeStorageSync(TOKEN_KEY)
+  token.setToken('')
   setUserInfo(null)
-  wx.redirectTo({ url: '/pages/login/login' })
+  wx.reLaunch({ url: '/pages/login/login' })
 }
 
 module.exports = {
@@ -75,6 +70,5 @@ module.exports = {
   checkLogin,
   doLogin,
   logout,
-  getToken,
-  initToken
+  goHome
 }

@@ -1,0 +1,30 @@
+<view class="container">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <input class="search-input" placeholder="搜索货物" value="{{keyword}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch" />
+  </view>
+
+  <!-- 类型筛选 -->
+  <scroll-view class="category-filter" scroll-x="true">
+    <view class="filter-item {{!selectedCategory ? 'active' : ''}}" bindtap="onFilterCategory" data-id="">全部</view>
+    <view class="filter-item {{selectedCategory === item._id ? 'active' : ''}}" wx:for="{{categories}}" wx:key="_id" bindtap="onFilterCategory" data-id="{{item._id}}">
+      {{item.name}}
+    </view>
+  </scroll-view>
+
+  <!-- 货物列表 -->
+  <view class="item-list">
+    <view class="item-card card" wx:for="{{items}}" wx:key="_id" bindtap="goDetail" data-id="{{item._id}}">
+      <view class="item-header">
+        <text class="item-name">{{item.name}}</text>
+        <text class="tag {{item.status === 'active' ? 'tag-green' : 'tag-gray'}}">{{item.status === 'active' ? '在库' : '停用'}}</text>
+      </view>
+      <view class="item-stock">
+        <text class="stock-info">可用 {{item.available_quantity || 0}} / 总计 {{item.total_quantity || 0}}</text>
+        <text class="stock-info borrowed">借出 {{item.borrowed_quantity || 0}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-tip" wx:if="{{!loading && items.length === 0}}">暂无货物，下拉刷新试试</view>
+</view>

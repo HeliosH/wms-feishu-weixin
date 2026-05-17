@@ -1,0 +1,24 @@
+<view class="tab-bar">
+  <view class="tab-item {{selected === 0 ? 'active' : ''}}"
+    wx:if="{{showManage}}"
+    bindtap="switchTab"
+    data-index="0"
+    data-path="/pages/manage/manage">
+    <text class="tab-icon">⚙️</text>
+    <text class="tab-text">管理</text>
+  </view>
+  <view class="tab-item {{selected === 1 ? 'active' : ''}}"
+    bindtap="switchTab"
+    data-index="1"
+    data-path="/pages/borrow/borrow">
+    <text class="tab-icon">📦</text>
+    <text class="tab-text">借用</text>
+  </view>
+  <view class="tab-item {{selected === 2 ? 'active' : ''}}"
+    bindtap="switchTab"
+    data-index="2"
+    data-path="/pages/mine/mine">
+    <text class="tab-icon">👤</text>
+    <text class="tab-text">我的</text>
+  </view>
+</view>

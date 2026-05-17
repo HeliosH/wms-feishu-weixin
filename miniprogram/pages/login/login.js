@@ -9,7 +9,7 @@ Page({
   onLoad() {
     auth.loadCachedUser()
     if (auth.isLoggedIn()) {
-      wx.reLaunch({ url: '/pages/index/index' })
+      auth.goHome()
     }
   },
 
@@ -18,10 +18,10 @@ Page({
     this.setData({ loading: true })
 
     try {
-      const userInfo = await auth.doLogin()
+      await auth.doLogin()
       util.showToast('登录成功', 'success')
       setTimeout(() => {
-        wx.reLaunch({ url: '/pages/index/index' })
+        auth.goHome()
       }, 500)
     } catch (err) {
       util.showToast(err.message || '登录失败')

@@ -169,28 +169,118 @@ node -e "require('dotenv').config();const j=require('jsonwebtoken');console.log(
 
 ---
 
-## 4. 小程序端配置
+## 4. 微信开发者工具 — 小程序端部署
 
-### 4.1 配置服务器地址
+### 4.1 下载安装
 
-编辑 `miniprogram/utils/api.js` 第 4 行：
+1. 打开 [微信开发者工具下载页](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)
+2. 下载对应系统版本（Windows/macOS）
+3. 安装后扫码登录（用绑定小程序的微信号）
+
+### 4.2 导入项目
+
+1. 打开微信开发者工具 → 点击 **+** 或 **导入项目**
+2. 填写项目信息：
+
+| 字段 | 值 |
+|------|-----|
+| 项目名称 | 仓仓 |
+| 目录 | 选择仓库的 `miniprogram/` 目录 |
+| AppID | `wx0c2fefb3db349ae2`（或你自己的 AppID） |
+| 开发模式 | 小程序 |
+
+3. 点击 **确定**，等待编译完成
+
+### 4.3 配置服务器地址
+
+编辑 `miniprogram/utils/api.js` 第 4 行，改为你的服务器地址：
 
 ```js
-// 开发环境（本地测试）
-const BASE_URL = 'http://localhost:3000/api'
+// 开发阶段（本地调试，需先启动 server/ 的 Node 服务）
+// const BASE_URL = 'http://localhost:3000/api'
 
 // 生产环境（替换为你的真实域名）
-// const BASE_URL = 'https://your-domain.com/api'
+const BASE_URL = 'https://www.hermeshelios.cloud/api'
 ```
 
-### 4.2 开发环境设置
+### 4.4 配置 AppID
 
-`project.config.json` 中的 `urlCheck` 已设为 `false`，允许开发阶段使用 localhost。
+编辑 `project.config.json`，确认 `appid` 正确：
 
-### 4.3 微信开发者工具
+```json
+"appid": "wx0c2fefb3db349ae2"
+```
 
-1. 打开项目 → 如果提示云开发相关错误，忽略（已移除云开发依赖）
-2. 编译 → 扫码登录测试
+> 如果是用自己的微信小程序 AppID，需要同步修改 `server/.env` 中的 `WX_APPID` 和 `WX_APPSECRET`。
+
+### 4.5 开发调试
+
+1. **启动后端服务**（在云端或本机）：
+
+```bash
+cd server && node app.js
+```
+
+2. **编译预览**：在开发者工具中点击 **编译**（或 Ctrl+B）
+
+3. **真机调试**：点击工具栏 **预览** → 生成二维码 → 手机微信扫码体验
+
+4. **控制台调试**：
+   - **Console**：查看 JS 日志、API 调用结果
+   - **Network**：查看 wx.request 请求和响应
+   - **AppData**：查看页面 data 数据
+   - **Storage**：查看缓存的 token 和 userInfo
+
+5. 如果请求报「不在合法域名列表」，检查 `project.config.json` 中 `urlCheck` 是否为 `false`（开发阶段必须关掉）
+
+### 4.6 上传代码
+
+开发完成、测试通过后：
+
+1. 点击工具栏 **上传** 按钮
+2. 填写版本号和备注：
+
+```
+版本号：1.0.0
+备注：仓仓初始版本 — 自建服务器架构
+```
+
+3. 上传成功后，代码会提交到微信后台
+
+### 4.7 提交审核
+
+1. 登录 [微信公众平台](https://mp.weixin.qq.com/) → 管理 → 版本管理
+2. 在 **开发版本** 中找到刚上传的版本 → 点击 **提交审核**
+3. 填写审核信息：
+
+| 字段 | 填写内容 |
+|------|---------|
+| 服务类目 | 工具 > 企业管理 |
+| 标签 | 仓储、库存、借用管理 |
+| 小程序功能描述 | 仓库库存管理，支持货物入库、借用申请与审批、库存变更记录等功能 |
+| 测试账号 | 提供一个已激活的测试账号 openid（可选） |
+
+4. 提交后等待审核（通常 1-7 个工作日）
+
+> **审核前提**：`urlCheck` 必须改回 `true`，且 `BASE_URL` 必须指向已备案域名的 HTTPS 地址。提交前请确认：
+> - 微信公众平台 → 开发管理 → 服务器域名 → `request合法域名` 和 `uploadFile合法域名` 都已添加
+> - 服务器 HTTPS 证书有效
+> - 后端服务正常运行
+
+### 4.8 发布上线
+
+审核通过后：
+
+1. 微信公众平台 → 版本管理 → **审核版本** → 点击 **发布**
+2. 发布后小程序即可被所有用户搜索和使用
+
+### 4.9 日常迭代
+
+```
+修改代码 → 开发者工具编译/调试 → 上传新版本 → 提交审核 → 发布
+```
+
+小版本迭代审核通常较快（几小时到 1 天）。后续后端更新无需审核，直接 SSH 到云机更新重启即可。
 
 ---
 

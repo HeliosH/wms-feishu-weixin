@@ -19,7 +19,7 @@
 
   <!-- 编辑弹窗 -->
   <view class="modal-mask" wx:if="{{showModal}}" bindtap="onCloseModal">
-    <view class="modal-content" catchtap="">
+    <view class="modal-content" catch:tap="noop">
       <view class="modal-title">{{isEdit ? '编辑类型' : '新增类型'}}</view>
       <view class="form-item">
         <text class="form-label">名称</text>

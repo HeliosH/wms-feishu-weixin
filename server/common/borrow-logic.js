@@ -2,7 +2,7 @@ const { fromRecord } = require('./feishu-client')
 
 async function getUserByOpenid(client, usersTableId, openid) {
   const res = await client.request('GET', `/tables/${usersTableId}/records`, null, {
-    filter: `CurrentValue.[openid] = "${openid}"`,
+    filter: `CurrentValue.[openid]="${openid}"`,
     page_size: 1
   })
   if (res.items && res.items.length > 0) return fromRecord(res.items[0])
@@ -52,16 +52,16 @@ async function getBorrowList(client, tableIds, params = {}) {
   const filters = []
 
   if (params.status) {
-    filters.push(`CurrentValue.[status] = "${params.status}"`)
+    filters.push(`CurrentValue.[status]="${params.status}"`)
   }
   if (params.borrowerId) {
-    filters.push(`CurrentValue.[borrower_id] = "${params.borrowerId}"`)
+    filters.push(`CurrentValue.[borrower_id]="${params.borrowerId}"`)
   }
   if (params.itemId) {
-    filters.push(`CurrentValue.[item_id] = "${params.itemId}"`)
+    filters.push(`CurrentValue.[item_id]="${params.itemId}"`)
   }
   if (filters.length > 0) {
-    queryParams.filter = filters.join(' AND ')
+    queryParams.filter = filters.join('&&')
   }
 
   const res = await client.request('GET', `/tables/${tableIds.borrowRecords}/records`, null, queryParams)

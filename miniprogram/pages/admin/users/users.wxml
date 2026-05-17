@@ -30,7 +30,7 @@
 
   <!-- 角色编辑弹窗 -->
   <view class="modal-mask" wx:if="{{showRoleModal}}" bindtap="onCloseModal">
-    <view class="modal-content" catchtap="">
+    <view class="modal-content" catch:tap="noop">
       <view class="modal-title">修改角色 - {{editUserName}}</view>
       <view class="role-check-list">
         <label class="role-check-item" wx:for="{{roleCheckList}}" wx:key="value">

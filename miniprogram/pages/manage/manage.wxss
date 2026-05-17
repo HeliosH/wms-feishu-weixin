@@ -1,0 +1,48 @@
+.grid-menu {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx 10rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.menu-item {
+  width: 33.33%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 0;
+  position: relative;
+}
+
+.menu-icon {
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  margin-bottom: 10rpx;
+  border-radius: 16rpx;
+}
+
+.menu-text {
+  font-size: 24rpx;
+  color: #333;
+}
+
+.badge {
+  position: absolute;
+  top: 10rpx;
+  right: 16rpx;
+  background-color: #ff4d4f;
+  color: #fff;
+  font-size: 20rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  line-height: 32rpx;
+  text-align: center;
+  border-radius: 16rpx;
+  padding: 0 8rpx;
+}

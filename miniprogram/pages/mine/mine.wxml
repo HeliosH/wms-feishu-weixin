@@ -1,0 +1,41 @@
+<view class="container">
+  <!-- 用户信息 -->
+  <view class="user-card card">
+    <image class="avatar" src="{{userInfo.avatar_url || '/images/warehouse-logo.png'}}" mode="aspectFill" />
+    <view class="user-info">
+      <text class="user-name">{{userInfo.name || '未设置姓名'}}</text>
+      <text class="user-role tag {{isAdmin ? 'tag-red' : 'tag-green'}}">{{roleLabel}}</text>
+    </view>
+  </view>
+
+  <!-- 我的借用 -->
+  <view class="section">
+    <view class="section-title">我的借用</view>
+    <view class="grid-menu">
+      <view class="menu-item" bindtap="goPage" data-url="/pages/borrow/my-borrows/my-borrows">
+        <view class="menu-icon">📋</view>
+        <text class="menu-text">当前借用</text>
+      </view>
+      <view class="menu-item" bindtap="goPage" data-url="/pages/borrow/history/history">
+        <view class="menu-icon">📜</view>
+        <text class="menu-text">借用记录</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 申请权限 -->
+  <view class="section" wx:if="{{needApplyRole}}">
+    <view class="section-title">账户权限</view>
+    <view class="grid-menu">
+      <view class="menu-item" bindtap="goPage" data-url="/pages/borrow/apply-role/apply-role">
+        <view class="menu-icon">✋</view>
+        <text class="menu-text">申请借用权限</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 退出登录 -->
+  <view class="logout-section">
+    <button class="btn-default" bindtap="onLogout">退出登录</button>
+  </view>
+</view>
