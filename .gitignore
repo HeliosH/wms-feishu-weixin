@@ -32,3 +32,4 @@ server/uploads/*
 
 # 微信小程序
 *.wxapkg
+project.private.config.json
