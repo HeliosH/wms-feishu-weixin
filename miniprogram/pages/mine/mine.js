@@ -6,6 +6,7 @@ Page({
     userInfo: null,
     roleLabel: '',
     isAdmin: false,
+    isBorrower: false,
     needApplyRole: false
   },
 
@@ -19,17 +20,24 @@ Page({
     const roles = Array.isArray(r) ? r : (typeof r === 'string' ? r.split(',').filter(Boolean) : [])
     const hasRole = roles.length > 0
     const isAdmin = role.isWarehouseAdmin(userInfo)
+    const isActive = userInfo.status === 'active' || hasRole
 
     this.setData({
       userInfo,
       roleLabel: role.getRoleLabel(userInfo.role),
       isAdmin,
-      needApplyRole: !hasRole && !isAdmin && userInfo.status === 'pending'
+      isBorrower: roles.includes('borrower') && isActive,
+      needApplyRole: (!hasRole && !isAdmin && userInfo.status === 'pending') ||
+        (!roles.includes('borrower') && !isAdmin && userInfo.status === 'pending_review')
     })
 
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 2 })
     }
+  },
+
+  goProfile() {
+    wx.navigateTo({ url: '/pages/user/profile/profile' })
   },
 
   goPage(e) {

@@ -20,7 +20,10 @@
     "pages/admin/item-borrowers/item-borrowers",
     "pages/admin/backfill/backfill",
     "pages/borrow/apply-role/apply-role",
-    "pages/admin/permission-approval/permission-approval"
+    "pages/borrow/return/return",
+    "pages/borrow/in-transit/in-transit",
+    "pages/admin/permission-approval/permission-approval",
+    "pages/user/profile/profile"
   ],
   "window": {
     "backgroundColor": "#F6F6F6",

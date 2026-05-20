@@ -1,64 +1,98 @@
-<view class="container">
-  <!-- 新增/编辑货物 -->
-  <view class="card" wx:if="{{!isAdjust}}">
-    <view class="card-title">{{isEdit ? '编辑货物' : '新增货物'}}</view>
-
-    <view class="form-item">
-      <text class="form-label">名称</text>
-      <input class="form-input" placeholder="请输入货物名称" value="{{formName}}" bindinput="onNameInput" />
-    </view>
-
-    <view class="form-item">
-      <text class="form-label">类型</text>
-      <picker mode="selector" range="{{categoryNames}}" bindchange="onCategoryPick">
-        <text class="picker-val {{formCategoryName ? '' : 'placeholder'}}">
-          {{formCategoryName || '请选择类型'}}
-        </text>
-      </picker>
-    </view>
-
-    <view class="form-item">
-      <text class="form-label">总数量</text>
-      <input class="form-input" type="number" placeholder="请输入数量" value="{{formQuantity}}" bindinput="onQuantityInput" wx:if="{{!isEdit}}" />
-      <text class="form-input" wx:if="{{isEdit}}">{{formQuantity}} (编辑请使用库存调整)</text>
-    </view>
-
-    <view class="form-item vertical">
-      <text class="form-label">描述</text>
-      <textarea class="form-textarea" placeholder="请输入描述" value="{{formDesc}}" bindinput="onDescInput" />
-    </view>
-
-    <button class="btn-primary save-btn" bindtap="onSave" loading="{{saving}}" disabled="{{saving}}">保存</button>
-    <button class="btn-default save-btn" wx:if="{{isEdit}}" bindtap="switchToAdjust">库存调整</button>
+<view class="page">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <input class="search-input" placeholder="搜索货物" value="{{keyword}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch" />
   </view>
 
-  <!-- 库存调整 -->
-  <view class="card" wx:if="{{isAdjust}}">
-    <view class="card-title">库存调整 - {{itemName}}</view>
+  <!-- 分类筛选 -->
+  <scroll-view class="category-filter" scroll-x="true" wx:if="{{categories.length > 0}}">
+    <view class="filter-tag {{!selectedCategory ? 'active' : ''}}" bindtap="onFilterCategory" data-id="">全部</view>
+    <view class="filter-tag {{selectedCategory === item._id ? 'active' : ''}}" wx:for="{{categories}}" wx:key="_id" bindtap="onFilterCategory" data-id="{{item._id}}">
+      {{item.name}}
+    </view>
+  </scroll-view>
 
-    <view class="current-stock">
-      <text class="stock-label">当前可用库存:</text>
-      <text class="stock-val">{{currentAvailable}}</text>
+  <!-- 货物列表 -->
+  <view class="item-list" wx:if="{{!loading}}">
+    <view class="item-row card" wx:for="{{items}}" wx:key="_id">
+      <view class="item-icon-wrap">
+        <text class="item-emoji">📦</text>
+      </view>
+      <view class="item-body">
+        <text class="item-name">{{item.name}}</text>
+        <view class="item-meta">
+          <text class="item-cat" wx:if="{{item.category_name}}">{{item.category_name}}</text>
+          <text class="item-stock-info">可用 <text class="stock-num">{{item.available_quantity || 0}}</text></text>
+          <text class="item-stock-info borrowed" wx:if="{{item.borrowed_quantity}}">借出 {{item.borrowed_quantity}}</text>
+        </view>
+        <!-- 调整控件 -->
+        <view class="adjust-row">
+          <view class="adjust-controls">
+            <view class="ctrl-btn minus" bindtap="adjustDelta" data-id="{{item._id}}" data-delta="-1">−</view>
+            <input class="ctrl-input" type="number" value="{{deltas[item._id] || 0}}" bindinput="onDeltaInput" data-id="{{item._id}}" />
+            <view class="ctrl-btn plus" bindtap="adjustDelta" data-id="{{item._id}}" data-delta="1">＋</view>
+          </view>
+          <input class="reason-input" placeholder="调整原因(选填)" value="{{reasons[item._id] || ''}}" bindinput="onReasonInput" data-id="{{item._id}}" maxlength="50" />
+        </view>
+      </view>
     </view>
 
+    <view class="empty-tip" wx:if="{{items.length === 0}}">暂无货物，点击右下角 ＋ 新增</view>
+  </view>
+
+  <!-- 底部提交栏 -->
+  <view class="submit-bar" wx:if="{{hasChanges}}">
+    <view class="submit-bg"></view>
+    <view class="submit-inner">
+      <view class="submit-summary">
+        <view class="summary-item">
+          <text class="summary-num">{{changeCount}}</text>
+          <text class="summary-label">项变更</text>
+        </view>
+        <view class="summary-divider"></view>
+        <view class="summary-item">
+          <text class="summary-num {{totalDelta > 0 ? 'positive' : 'negative'}}">{{totalDelta > 0 ? '+' : ''}}{{totalDelta}}</text>
+          <text class="summary-label">合计</text>
+        </view>
+      </view>
+      <view class="submit-btn" bindtap="onSubmit">
+        <text wx:if="{{!submitting}}">确认调整</text>
+        <text wx:else>提交中...</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 新增按钮 -->
+  <view class="fab" bindtap="onShowAdd">
+    <text>＋</text>
+  </view>
+</view>
+
+<!-- 新增货品弹窗 -->
+<view class="modal-mask" wx:if="{{showAddModal}}" bindtap="onHideAdd">
+  <view class="modal-content" catch:tap="noop">
+    <view class="modal-title">新增货品</view>
     <view class="form-item">
-      <text class="form-label">调整类型</text>
-      <picker mode="selector" range="{{adjustTypes}}" range-key="label" bindchange="onAdjustTypePick">
-        <text class="picker-val">{{adjustTypeLabel}}</text>
+      <text class="form-label">名称</text>
+      <input class="form-input" placeholder="货物名称" value="{{addName}}" bindinput="onAddName" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">类型</text>
+      <picker mode="selector" range="{{categories}}" range-key="name" bindchange="onAddCategoryPick">
+        <text class="picker-val {{addCategoryName ? '' : 'placeholder'}}">{{addCategoryName || '请选择'}}</text>
       </picker>
     </view>
-
     <view class="form-item">
-      <text class="form-label">数量</text>
-      <input class="form-input" type="number" placeholder="请输入数量" value="{{adjustQty}}" bindinput="onAdjustQtyInput" />
+      <text class="form-label">初始数量</text>
+      <input class="form-input" type="number" placeholder="0" value="{{addQty}}" bindinput="onAddQty" />
     </view>
-
-    <view class="form-item vertical">
-      <text class="form-label">原因</text>
-      <textarea class="form-textarea" placeholder="请输入调整原因" value="{{adjustReason}}" bindinput="onAdjustReasonInput" />
+    <view class="form-item">
+      <text class="form-label">描述</text>
+      <input class="form-input" placeholder="选填" value="{{addDesc}}" bindinput="onAddDesc" />
     </view>
-
-    <button class="btn-primary save-btn" bindtap="onAdjust" loading="{{saving}}" disabled="{{saving}}">确认调整</button>
-    <button class="btn-default save-btn" bindtap="backToEdit">返回编辑</button>
+    <view class="modal-btns">
+      <button class="btn-default modal-btn" bindtap="onHideAdd">取消</button>
+      <button class="btn-primary modal-btn" bindtap="onAddSave" loading="{{addSaving}}" disabled="{{addSaving}}">保存</button>
+    </view>
   </view>
 </view>

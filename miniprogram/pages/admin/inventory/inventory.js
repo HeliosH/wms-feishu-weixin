@@ -4,153 +4,182 @@ const util = require('../../../utils/util')
 
 Page({
   data: {
-    isEdit: false,
-    isAdjust: false,
-    itemId: '',
-    itemName: '',
-    currentAvailable: 0,
-    // 表单
-    formName: '',
-    formCategoryId: '',
-    formCategoryName: '',
-    formQuantity: '',
-    formDesc: '',
+    items: [],
     categories: [],
-    categoryNames: [],
-    saving: false,
-    // 库存调整
-    adjustTypes: [
-      { value: 'stock_in', label: '入库' },
-      { value: 'stock_out', label: '出库' },
-      { value: 'adjust', label: '盘点调整' }
-    ],
-    adjustType: 'stock_in',
-    adjustTypeLabel: '入库',
-    adjustQty: '',
-    adjustReason: ''
+    keyword: '',
+    selectedCategory: '',
+    loading: true,
+    // 调整跟踪
+    deltas: {},
+    reasons: {},
+    changeCount: 0,
+    totalDelta: 0,
+    hasChanges: false,
+    submitting: false,
+    // 新增货品弹窗
+    showAddModal: false,
+    addName: '',
+    addCategoryId: '',
+    addCategoryName: '',
+    addQty: '',
+    addDesc: '',
+    addSaving: false
   },
 
-  onLoad(options) {
+  onLoad() {
     this.loadCategories()
-    if (options.id) {
-      // 编辑模式 — 检查是否是库存调整
-      this.setData({ itemId: options.id })
-      this.loadItem(options.id)
-    }
+  },
+
+  onShow() {
+    this.loadItems()
   },
 
   async loadCategories() {
     try {
       const list = await api.getCategoryList()
-      this.setData({
-        categories: list,
-        categoryNames: list.map(c => c.name)
-      })
-    } catch (err) {
-      // ignore
-    }
+      this.setData({ categories: list })
+    } catch (err) { /* ignore */ }
   },
 
-  async loadItem(id) {
+  async loadItems() {
+    this.setData({ loading: true })
     try {
-      const item = await api.getItemDetail(id)
-      this.setData({
-        isEdit: true,
-        formName: item.name,
-        formCategoryId: item.category_id,
-        formCategoryName: item.category_name,
-        formQuantity: item.total_quantity,
-        formDesc: item.description || '',
-        itemName: item.name,
-        currentAvailable: item.available_quantity
-      })
-    } catch (err) {
-      util.showToast(err.message)
+      const params = { status: 'active' }
+      if (this.data.keyword) params.keyword = this.data.keyword
+      if (this.data.selectedCategory) params.categoryId = this.data.selectedCategory
+      const list = await api.getItemList(params)
+      this.setData({ items: list }, () => this.resetDeltas())
+    } catch (err) { /* ignore */ } finally {
+      this.setData({ loading: false })
     }
   },
 
-  onNameInput(e) { this.setData({ formName: e.detail.value }) },
-  onQuantityInput(e) { this.setData({ formQuantity: e.detail.value }) },
-  onDescInput(e) { this.setData({ formDesc: e.detail.value }) },
+  resetDeltas() {
+    this.setData({ deltas: {}, reasons: {}, changeCount: 0, totalDelta: 0, hasChanges: false })
+  },
 
-  onCategoryPick(e) {
-    const idx = e.detail.value
+  updateSummary() {
+    const deltas = this.data.deltas
+    let count = 0
+    let total = 0
+    for (const k in deltas) {
+      if (deltas[k] !== 0) { count++; total += deltas[k] }
+    }
+    this.setData({ changeCount: count, totalDelta: total, hasChanges: count > 0 })
+  },
+
+  // 搜索
+  onSearchInput(e) { this.setData({ keyword: e.detail.value }) },
+  onSearch() { this.loadItems() },
+
+  // 分类筛选
+  onFilterCategory(e) {
+    const id = e.currentTarget.dataset.id
+    this.setData({ selectedCategory: id === this.data.selectedCategory ? '' : id })
+    this.loadItems()
+  },
+
+  // 调整数量
+  adjustDelta(e) {
+    const id = e.currentTarget.dataset.id
+    const delta = Number(e.currentTarget.dataset.delta)
+    const deltas = { ...this.data.deltas }
+    deltas[id] = (deltas[id] || 0) + delta
+    this.setData({ deltas }, () => this.updateSummary())
+  },
+
+  onDeltaInput(e) {
+    const id = e.currentTarget.dataset.id
+    const val = parseInt(e.detail.value, 10)
+    const deltas = { ...this.data.deltas }
+    if (isNaN(val) || val === 0) {
+      delete deltas[id]
+    } else {
+      deltas[id] = val
+    }
+    this.setData({ deltas }, () => this.updateSummary())
+  },
+
+  onReasonInput(e) {
+    const id = e.currentTarget.dataset.id
+    const reasons = { ...this.data.reasons }
+    reasons[id] = e.detail.value
+    this.setData({ reasons })
+  },
+
+  // 提交调整
+  async onSubmit() {
+    if (!this.data.hasChanges) return
+    const deltas = this.data.deltas
+    const userInfo = auth.getUserInfo()
+    this.setData({ submitting: true })
+
+    let done = 0
+    let failed = 0
+    for (const itemId in deltas) {
+      const delta = deltas[itemId]
+      if (delta === 0) continue
+      const changeType = delta > 0 ? 'stock_in' : 'stock_out'
+      const reason = this.data.reasons[itemId] || ''
+      try {
+        await api.adjustInventory({
+          itemId,
+          changeType,
+          quantity: Math.abs(delta),
+          reason,
+          operatorName: userInfo.name || ''
+        })
+        done++
+      } catch (err) { failed++ }
+    }
+
+    this.setData({ submitting: false })
+    if (failed === 0) {
+      util.showToast(`已调整 ${done} 件货物`, 'success')
+      this.loadItems()
+    } else {
+      util.showToast(`完成 ${done} 件，失败 ${failed} 件`)
+    }
+  },
+
+  // 新增货品
+  onShowAdd() {
+    this.setData({
+      showAddModal: true,
+      addName: '', addCategoryId: '', addCategoryName: '',
+      addQty: '', addDesc: ''
+    })
+  },
+  noop() {},
+  onHideAdd() { this.setData({ showAddModal: false }) },
+  onAddName(e) { this.setData({ addName: e.detail.value }) },
+  onAddQty(e) { this.setData({ addQty: e.detail.value }) },
+  onAddDesc(e) { this.setData({ addDesc: e.detail.value }) },
+  onAddCategoryPick(e) {
+    const idx = Number(e.detail.value)
     const cat = this.data.categories[idx]
-    if (cat) {
-      this.setData({ formCategoryId: cat._id, formCategoryName: cat.name })
-    }
+    if (cat) this.setData({ addCategoryId: cat._id, addCategoryName: cat.name })
   },
 
-  onAdjustTypePick(e) {
-    const idx = e.detail.value
-    const type = this.data.adjustTypes[idx]
-    this.setData({ adjustType: type.value, adjustTypeLabel: type.label })
-  },
-
-  onAdjustQtyInput(e) { this.setData({ adjustQty: e.detail.value }) },
-  onAdjustReasonInput(e) { this.setData({ adjustReason: e.detail.value }) },
-
-  switchToAdjust() {
-    this.setData({ isAdjust: true })
-  },
-
-  async onSave() {
-    if (!this.data.formName.trim()) {
-      util.showToast('请输入货物名称')
-      return
-    }
-
-    this.setData({ saving: true })
+  async onAddSave() {
+    const { addName, addCategoryId, addCategoryName, addQty, addDesc } = this.data
+    if (!addName.trim()) { util.showToast('请输入货物名称'); return }
+    this.setData({ addSaving: true })
     try {
-      if (this.data.isEdit) {
-        await api.updateItem(this.data.itemId, {
-          name: this.data.formName,
-          categoryId: this.data.formCategoryId,
-          categoryName: this.data.formCategoryName,
-          description: this.data.formDesc
-        })
-      } else {
-        const qty = Number(this.data.formQuantity) || 0
-        await api.createItem({
-          name: this.data.formName,
-          categoryId: this.data.formCategoryId,
-          categoryName: this.data.formCategoryName,
-          totalQuantity: qty,
-          description: this.data.formDesc
-        })
-      }
-      util.showToast('保存成功', 'success')
-      setTimeout(() => wx.navigateBack(), 500)
-    } catch (err) {
-      util.showToast(err.message)
-    } finally {
-      this.setData({ saving: false })
-    }
-  },
-
-  async onAdjust() {
-    const qty = Number(this.data.adjustQty)
-    if (!qty || qty <= 0) {
-      util.showToast('请输入有效数量')
-      return
-    }
-
-    this.setData({ saving: true })
-    try {
-      const userInfo = auth.getUserInfo()
-      await api.adjustInventory({
-        itemId: this.data.itemId,
-        changeType: this.data.adjustType,
-        quantity: qty,
-        reason: this.data.adjustReason,
-        operatorName: userInfo.name || ''
+      await api.createItem({
+        name: addName.trim(),
+        categoryId: addCategoryId,
+        categoryName: addCategoryName,
+        totalQuantity: Number(addQty) || 0,
+        description: addDesc
       })
-      util.showToast('调整成功', 'success')
-      setTimeout(() => wx.navigateBack(), 500)
+      util.showToast('添加成功', 'success')
+      this.setData({ showAddModal: false, addSaving: false })
+      this.loadItems()
+      this.loadCategories()
     } catch (err) {
-      util.showToast(err.message)
-    } finally {
-      this.setData({ saving: false })
+      this.setData({ addSaving: false })
+      util.showToast(err.message || '添加失败')
     }
   }
 })

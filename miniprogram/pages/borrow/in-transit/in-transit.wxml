@@ -1,0 +1,58 @@
+<view class="page">
+  <view class="tab-bar card">
+    <view class="tab {{activeTab === 'borrow' ? 'active' : ''}}" bindtap="switchTab" data-tab="borrow">
+      <text>在途借</text>
+      <text class="tab-count" wx:if="{{borrowRecords.length > 0}}">{{borrowRecords.length}}</text>
+    </view>
+    <view class="tab {{activeTab === 'return' ? 'active' : ''}}" bindtap="switchTab" data-tab="return">
+      <text>在途还</text>
+      <text class="tab-count" wx:if="{{returnRecords.length > 0}}">{{returnRecords.length}}</text>
+    </view>
+  </view>
+
+  <view class="record-list" wx:if="{{activeTab === 'borrow'}}">
+    <view class="record-card card" wx:for="{{borrowRecords}}" wx:key="_id">
+      <view class="record-header">
+        <text class="record-name">{{item.item_name}}</text>
+        <text class="tag {{item.statusTagClass}}">{{item.statusLabel}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">数量</text>
+        <text class="record-value">{{item.quantity}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">申请时间</text>
+        <text class="record-value">{{item.apply_time_str}}</text>
+      </view>
+      <view class="record-row" wx:if="{{item.reject_reason}}">
+        <text class="record-label">驳回原因</text>
+        <text class="record-value reject">{{item.reject_reason}}</text>
+      </view>
+    </view>
+    <view class="empty" wx:if="{{!loading && borrowRecords.length === 0}}">
+      <text class="empty-icon">📋</text>
+      <text class="empty-text">没有在途借流程</text>
+    </view>
+  </view>
+
+  <view class="record-list" wx:if="{{activeTab === 'return'}}">
+    <view class="record-card card" wx:for="{{returnRecords}}" wx:key="_id">
+      <view class="record-header">
+        <text class="record-name">{{item.item_name}}</text>
+        <text class="tag {{item.statusTagClass}}">{{item.statusLabel}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">数量</text>
+        <text class="record-value">{{item.quantity}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">领取时间</text>
+        <text class="record-value">{{item.collect_time_str}}</text>
+      </view>
+    </view>
+    <view class="empty" wx:if="{{!loading && returnRecords.length === 0}}">
+      <text class="empty-icon">🎉</text>
+      <text class="empty-text">没有在途还流程</text>
+    </view>
+  </view>
+</view>

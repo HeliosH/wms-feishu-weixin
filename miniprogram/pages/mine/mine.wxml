@@ -1,41 +1,54 @@
-<view class="container">
+<view class="page">
   <!-- 用户信息 -->
-  <view class="user-card card">
+  <view class="user-card card" bindtap="goProfile">
     <image class="avatar" src="{{userInfo.avatar_url || '/images/warehouse-logo.png'}}" mode="aspectFill" />
     <view class="user-info">
-      <text class="user-name">{{userInfo.name || '未设置姓名'}}</text>
-      <text class="user-role tag {{isAdmin ? 'tag-red' : 'tag-green'}}">{{roleLabel}}</text>
+      <text class="user-name">{{userInfo.name || '点击设置姓名'}}</text>
+      <text class="user-role-tag">{{roleLabel || '暂无角色'}}</text>
     </view>
-  </view>
-
-  <!-- 我的借用 -->
-  <view class="section">
-    <view class="section-title">我的借用</view>
-    <view class="grid-menu">
-      <view class="menu-item" bindtap="goPage" data-url="/pages/borrow/my-borrows/my-borrows">
-        <view class="menu-icon">📋</view>
-        <text class="menu-text">当前借用</text>
-      </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/borrow/history/history">
-        <view class="menu-icon">📜</view>
-        <text class="menu-text">借用记录</text>
-      </view>
-    </view>
+    <text class="user-arrow">›</text>
   </view>
 
   <!-- 申请权限 -->
   <view class="section" wx:if="{{needApplyRole}}">
-    <view class="section-title">账户权限</view>
-    <view class="grid-menu">
-      <view class="menu-item" bindtap="goPage" data-url="/pages/borrow/apply-role/apply-role">
-        <view class="menu-icon">✋</view>
-        <text class="menu-text">申请借用权限</text>
+    <view class="apply-banner card" bindtap="goPage" data-url="/pages/borrow/apply-role/apply-role">
+      <view class="apply-icon-box">
+        <text>🔐</text>
+      </view>
+      <view class="apply-text">
+        <text class="apply-title">申请借用权限</text>
+        <text class="apply-desc">您还没有借用权限，点击申请</text>
+      </view>
+      <text class="apply-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 借用功能 -->
+  <view class="section" wx:if="{{isBorrower}}">
+    <view class="section-title">我的借用</view>
+    <view class="menu-card card">
+      <view class="menu-row" bindtap="goPage" data-url="/pages/borrow/my-borrows/my-borrows">
+        <view class="menu-icon-box blue-bg"><text class="menu-emoji">📋</text></view>
+        <text class="menu-text">当前借用</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-divider"></view>
+      <view class="menu-row" bindtap="goPage" data-url="/pages/borrow/history/history">
+        <view class="menu-icon-box orange-bg"><text class="menu-emoji">📜</text></view>
+        <text class="menu-text">借用记录</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-divider"></view>
+      <view class="menu-row" bindtap="goPage" data-url="/pages/borrow/in-transit/in-transit">
+        <view class="menu-icon-box purple-bg"><text class="menu-emoji">🔄</text></view>
+        <text class="menu-text">在途流程</text>
+        <text class="menu-arrow">›</text>
       </view>
     </view>
   </view>
 
   <!-- 退出登录 -->
   <view class="logout-section">
-    <button class="btn-default" bindtap="onLogout">退出登录</button>
+    <button class="btn-logout" bindtap="onLogout">退出登录</button>
   </view>
 </view>

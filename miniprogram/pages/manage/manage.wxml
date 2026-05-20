@@ -1,45 +1,183 @@
-<view class="container">
-  <view class="section">
-    <view class="section-title">仓库管理</view>
-    <view class="grid-menu">
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/category/category">
-        <view class="menu-icon">📦</view>
-        <text class="menu-text">类型管理</text>
+<view class="page">
+  <!-- ===== 仓库总览 ===== -->
+  <view class="overview-section">
+    <view class="section-header">
+      <text class="section-title">仓库总览</text>
+      <text class="section-sub">借出 {{overviewItems.length}} 种</text>
+    </view>
+
+    <scroll-view class="overview-scroll" scroll-x="true" wx:if="{{overviewItems.length > 0}}">
+      <view class="overview-card" wx:for="{{overviewItems}}" wx:key="_id" bindtap="goItemBorrowers" data-id="{{item._id}}">
+        <view class="ov-icon-wrap">
+          <text class="ov-icon-text">📦</text>
+        </view>
+        <text class="ov-name">{{item.name}}</text>
+        <view class="ov-stats">
+          <view class="ov-stat">
+            <text class="ov-num warn">{{item.borrowed_quantity || 0}}</text>
+            <text class="ov-label">借出</text>
+          </view>
+          <view class="ov-divider"></view>
+          <view class="ov-stat">
+            <text class="ov-num ok">{{item.available_quantity || 0}}</text>
+            <text class="ov-label">可用</text>
+          </view>
+        </view>
+        <text class="ov-tip">点击查看 ›</text>
       </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/inventory/inventory">
-        <view class="menu-icon">📋</view>
-        <text class="menu-text">库存管理</text>
+    </scroll-view>
+
+    <view class="overview-empty card" wx:elif="{{!overviewLoading}}">
+      <text class="empty-icon">📭</text>
+      <text class="empty-text">暂无借出货物</text>
+    </view>
+  </view>
+
+  <!-- ===== 库存管理 ===== -->
+  <view class="tab-content" wx:if="{{activeTab === 'inventory'}}">
+    <view class="big-actions">
+      <view class="big-card" bindtap="goPage" data-url="/pages/admin/inventory/inventory">
+        <view class="big-icon-wrap add-bg">
+          <text class="big-icon-text">＋</text>
+        </view>
+        <text class="big-title">新增货品</text>
+        <text class="big-sub">录入新货物信息</text>
       </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/inventory-log/inventory-log">
-        <view class="menu-icon">📊</view>
-        <text class="menu-text">变更记录</text>
+      <view class="big-card" bindtap="goPage" data-url="/pages/admin/inventory/inventory">
+        <view class="big-icon-wrap adjust-bg">
+          <text class="big-icon-text">⇄</text>
+        </view>
+        <text class="big-title">调整库存</text>
+        <text class="big-sub">入库 · 出库 · 盘点</text>
       </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/borrow-approval/borrow-approval">
-        <view class="menu-icon">✅</view>
-        <text class="menu-text">借用审批</text>
-        <view class="badge" wx:if="{{pendingBorrowCount}}">{{pendingBorrowCount}}</view>
+    </view>
+    <view class="aux-list">
+      <view class="aux-card card" bindtap="goPage" data-url="/pages/item/list/list">
+        <view class="aux-icon-wrap blue-bg"><text class="aux-emoji">📋</text></view>
+        <text class="aux-label">查看库存</text>
+        <text class="aux-arrow">›</text>
       </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/permission-approval/permission-approval">
-        <view class="menu-icon">🔐</view>
-        <text class="menu-text">权限审批</text>
-        <view class="badge" wx:if="{{pendingRoleCount}}">{{pendingRoleCount}}</view>
+      <view class="aux-card card" bindtap="goPage" data-url="/pages/admin/category/category">
+        <view class="aux-icon-wrap purple-bg"><text class="aux-emoji">🏷️</text></view>
+        <text class="aux-label">类型管理</text>
+        <text class="aux-arrow">›</text>
       </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/collect-confirm/collect-confirm">
-        <view class="menu-icon">📥</view>
-        <text class="menu-text">领取确认</text>
+      <view class="aux-card card" bindtap="goPage" data-url="/pages/admin/inventory-log/inventory-log">
+        <view class="aux-icon-wrap orange-bg"><text class="aux-emoji">📊</text></view>
+        <text class="aux-label">变更记录</text>
+        <text class="aux-arrow">›</text>
       </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/return-confirm/return-confirm">
-        <view class="menu-icon">📤</view>
-        <text class="menu-text">归还确认</text>
+    </view>
+  </view>
+
+  <!-- ===== 流程管理 ===== -->
+  <view class="tab-content" wx:if="{{activeTab === 'flow'}}">
+    <view class="flow-list">
+      <view class="flow-card card" bindtap="goPage" data-url="/pages/admin/borrow-approval/borrow-approval">
+        <view class="flow-icon-wrap green-bg"><text class="flow-emoji">✅</text></view>
+        <view class="flow-info">
+          <text class="flow-title">借用审批</text>
+          <text class="flow-desc">审核借用申请</text>
+        </view>
+        <view class="flow-badge" wx:if="{{pendingBorrowCount > 0}}">{{pendingBorrowCount}}</view>
+        <text class="flow-arrow">›</text>
       </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/backfill/backfill">
-        <view class="menu-icon">📝</view>
-        <text class="menu-text">补录领取</text>
+      <view class="flow-card card" bindtap="goPage" data-url="/pages/admin/collect-confirm/collect-confirm">
+        <view class="flow-icon-wrap blue-bg"><text class="flow-emoji">📥</text></view>
+        <view class="flow-info">
+          <text class="flow-title">领取确认</text>
+          <text class="flow-desc">确认货物已交付</text>
+        </view>
+        <view class="flow-badge" wx:if="{{approvedCount > 0}}">{{approvedCount}}</view>
+        <text class="flow-arrow">›</text>
       </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/users/users">
-        <view class="menu-icon">👥</view>
-        <text class="menu-text">用户管理</text>
+      <view class="flow-card card" bindtap="goPage" data-url="/pages/admin/return-confirm/return-confirm">
+        <view class="flow-icon-wrap purple-bg"><text class="flow-emoji">📤</text></view>
+        <view class="flow-info">
+          <text class="flow-title">归还确认</text>
+          <text class="flow-desc">确认货物已归还</text>
+        </view>
+        <view class="flow-badge" wx:if="{{collectedCount > 0}}">{{collectedCount}}</view>
+        <text class="flow-arrow">›</text>
       </view>
+      <view class="flow-card card" bindtap="goPage" data-url="/pages/admin/backfill/backfill">
+        <view class="flow-icon-wrap orange-bg"><text class="flow-emoji">📝</text></view>
+        <view class="flow-info">
+          <text class="flow-title">补录领取</text>
+          <text class="flow-desc">历史数据补录</text>
+        </view>
+        <text class="flow-arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 角色管理 ===== -->
+  <view class="tab-content" wx:if="{{activeTab === 'role'}}">
+    <view class="flow-card card" bindtap="goPage" data-url="/pages/admin/permission-approval/permission-approval">
+      <view class="flow-icon-wrap red-bg"><text class="flow-emoji">🔐</text></view>
+      <view class="flow-info">
+        <text class="flow-title">权限审批</text>
+        <text class="flow-desc">审核用户角色申请</text>
+      </view>
+      <view class="flow-badge" wx:if="{{pendingRoleCount > 0}}">{{pendingRoleCount}}</view>
+      <text class="flow-arrow">›</text>
+    </view>
+
+    <view class="section-header role-header">
+      <text class="section-title">直接分配角色</text>
+      <text class="section-sub">点击用户修改角色</text>
+    </view>
+    <view class="user-list" wx:if="{{!usersLoading}}">
+      <view class="user-row card" wx:for="{{users}}" wx:key="_id" bindtap="onEditRole" data-index="{{index}}">
+        <image class="user-avatar" src="{{item.avatar_url || '/images/warehouse-logo.png'}}" mode="aspectFill" />
+        <view class="user-body">
+          <text class="user-name">{{item.name || '未设置姓名'}}</text>
+          <view class="user-tags">
+            <text class="tag tag-red" wx:if="{{item.roles.indexOf('admin') > -1}}">管理员</text>
+            <text class="tag tag-blue" wx:if="{{item.roles.indexOf('warehouse_admin') > -1}}">仓库管理员</text>
+            <text class="tag tag-green" wx:if="{{item.roles.indexOf('borrower') > -1}}">借用人员</text>
+            <text class="tag tag-gray" wx:if="{{item.status === 'inactive'}}">禁用</text>
+            <text class="tag tag-orange" wx:if="{{item.status === 'pending_review'}}">待审</text>
+          </view>
+        </view>
+        <text class="user-arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 子 Tab 栏 ===== -->
+  <view class="sub-tab-bar">
+    <view class="sub-tab {{activeTab === 'inventory' ? 'active' : ''}}" bindtap="switchTab" data-tab="inventory">
+      <text>库存管理</text>
+    </view>
+    <view class="sub-tab {{activeTab === 'flow' ? 'active' : ''}}" bindtap="switchTab" data-tab="flow">
+      <text>流程管理</text>
+      <view class="sub-dot" wx:if="{{pendingBorrowCount + pendingRoleCount > 0}}"></view>
+    </view>
+    <view class="sub-tab {{activeTab === 'role' ? 'active' : ''}}" bindtap="switchTab" data-tab="role">
+      <text>角色管理</text>
+      <view class="sub-dot" wx:if="{{pendingRoleCount > 0}}"></view>
+    </view>
+  </view>
+</view>
+
+<!-- 角色编辑弹窗 -->
+<view class="modal-mask" wx:if="{{showRoleModal}}" bindtap="onCloseModal">
+  <view class="modal-content" catch:tap="noop">
+    <view class="modal-title">
+      <text>分配角色</text>
+      <text class="modal-sub">{{roleEditUser.name || roleEditUser.openid}}</text>
+    </view>
+    <view class="role-check-list">
+      <label class="role-check-item" wx:for="{{roleCheckList}}" wx:key="value">
+        <checkbox value="{{item.value}}" checked="{{item.checked}}" bindtap="onRoleToggle" data-index="{{index}}" />
+        <text class="role-check-label">{{item.label}}</text>
+      </label>
+    </view>
+    <text class="role-hint">可同时勾选多个角色</text>
+    <view class="modal-btns">
+      <button class="btn-default modal-btn" bindtap="onCloseModal">取消</button>
+      <button class="btn-primary modal-btn" bindtap="onSaveRole">保存</button>
     </view>
   </view>
 </view>

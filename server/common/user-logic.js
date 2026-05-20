@@ -104,6 +104,16 @@ async function approveRole(client, tableIds, targetOpenid, approved, role) {
   return { success: true }
 }
 
+async function updateProfile(client, tableIds, openid, name, avatarUrl) {
+  const user = await findUserByOpenid(client, tableIds.users, openid)
+  if (!user) throw new Error('用户不存在')
+  const fields = {}
+  if (name !== undefined && name !== null) fields.name = name
+  if (avatarUrl !== undefined && avatarUrl !== null) fields.avatar_url = avatarUrl
+  const res = await client.request('PUT', `/tables/${tableIds.users}/records/${user._id}`, { fields })
+  return fromRecord(res.record)
+}
+
 module.exports = {
   findUserByOpenid,
   login,
@@ -111,5 +121,6 @@ module.exports = {
   updateUserRole,
   toggleUserStatus,
   applyRole,
-  approveRole
+  approveRole,
+  updateProfile
 }

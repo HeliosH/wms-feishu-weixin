@@ -15,6 +15,7 @@ router.post('/', async (req, res) => {
       case 'toggleUserStatus': result = await userLogic.toggleUserStatus(feishuClient, tableIds, params.openid, params.status); break
       case 'applyRole': result = await userLogic.applyRole(feishuClient, tableIds, openid, params.name); break
       case 'approveRole': result = await userLogic.approveRole(feishuClient, tableIds, params.openid, params.approved, params.role); break
+      case 'updateProfile': result = await userLogic.updateProfile(feishuClient, tableIds, openid, params.name, params.avatarUrl); break
       default: throw new Error(`未知操作: ${action}`)
     }
     res.json({ code: 0, data: result })

@@ -64,6 +64,10 @@ function approveRole(openid, approved, role) {
   return request('POST', '/user', { action: 'approveRole', openid, approved, role })
 }
 
+function updateProfile(name, avatarUrl) {
+  return request('POST', '/user', { action: 'updateProfile', name, avatarUrl })
+}
+
 // 货物类型相关
 function getCategoryList() {
   return request('POST', '/item', { action: 'getCategoryList' })
@@ -171,6 +175,7 @@ module.exports = {
   toggleUserStatus,
   applyRole,
   approveRole,
+  updateProfile,
   getCategoryList,
   createCategory,
   updateCategory,
