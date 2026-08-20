@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "在途流程"
+  "navigationBarTitleText": "在途流程",
+  "usingComponents": {
+    "icon": "/components/icon/icon"
+  }
 }

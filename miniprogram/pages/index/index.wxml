@@ -1,10 +1,5 @@
 <view class="container">
-  <!-- Logo -->
-  <view class="logo-box">
-    <image class="logo" src="/images/warehouse-logo.png" mode="aspectFit" />
-  </view>
-
-  <!-- 用户信息 -->
+  <!-- 顶部问候 -->
   <view class="user-bar card">
     <view class="user-info">
       <image class="avatar" src="{{userInfo.avatar_url || '/images/warehouse-logo.png'}}" mode="aspectFill" />
@@ -13,92 +8,149 @@
         <text class="user-role tag {{userInfo.role === 'admin' ? 'tag-red' : userInfo.role === 'warehouse_admin' ? 'tag-blue' : 'tag-green'}}">{{roleLabel}}</text>
       </view>
     </view>
-  </view>
-
-  <!-- 待申请权限的用户 -->
-  <view class="section" wx:if="{{needApplyRole}}">
-    <view class="section-title">账户权限</view>
-    <view class="grid-menu">
-      <view class="menu-item" bindtap="goPage" data-url="/pages/borrow/apply-role/apply-role">
-        <view class="menu-icon icon-apply">✋</view>
-        <text class="menu-text">申请借用权限</text>
-      </view>
+    <view class="logout-btn" hover-class="press" bindtap="onLogout">
+      <text>退出</text>
     </view>
   </view>
 
-  <!-- 管理功能入口 (仓库管理员可见) -->
-  <view class="section" wx:if="{{isWarehouseAdmin}}">
-    <view class="section-title">仓库管理</view>
-    <view class="grid-menu">
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/category/category">
-        <view class="menu-icon icon-category">📦</view>
-        <text class="menu-text">类型管理</text>
-      </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/inventory/inventory">
-        <view class="menu-icon icon-inventory">📋</view>
-        <text class="menu-text">库存管理</text>
-      </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/inventory-log/inventory-log">
-        <view class="menu-icon icon-log">📊</view>
-        <text class="menu-text">变更记录</text>
-      </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/borrow-approval/borrow-approval">
-        <view class="menu-icon icon-approval">✅</view>
-        <text class="menu-text">借用审批</text>
-        <view class="badge" wx:if="{{pendingBorrowCount > 0}}">{{pendingBorrowCount}}</view>
-      </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/permission-approval/permission-approval">
-        <view class="menu-icon icon-perm">🔐</view>
-        <text class="menu-text">权限审批</text>
-        <view class="badge" wx:if="{{pendingRoleCount > 0}}">{{pendingRoleCount}}</view>
-      </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/collect-confirm/collect-confirm">
-        <view class="menu-icon icon-collect">📥</view>
-        <text class="menu-text">领取确认</text>
-      </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/return-confirm/return-confirm">
-        <view class="menu-icon icon-return">📤</view>
-        <text class="menu-text">归还确认</text>
-      </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/backfill/backfill">
-        <view class="menu-icon icon-backfill">📝</view>
-        <text class="menu-text">补录领取</text>
-      </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/admin/users/users">
-        <view class="menu-icon icon-users">👥</view>
-        <text class="menu-text">用户管理</text>
-      </view>
-    </view>
-  </view>
-
-  <!-- 货物浏览入口 (借用人员可见) -->
-  <view class="section" wx:if="{{isBorrower}}">
-    <view class="section-title">货物浏览</view>
-    <view class="grid-menu">
-      <view class="menu-item" bindtap="goPage" data-url="/pages/item/list/list">
-        <view class="menu-icon icon-items">🏷️</view>
-        <text class="menu-text">货物列表</text>
-      </view>
-    </view>
-  </view>
-
-  <!-- 借用功能入口 (借用人员可见) -->
-  <view class="section" wx:if="{{isBorrower}}">
+  <!-- ==================== 普通用户视角（管理员不显示，走管理视角） ==================== -->
+  <block wx:if="{{isBorrower && !isWarehouseAdmin}}">
     <view class="section-title">我的借用</view>
-    <view class="grid-menu">
-      <view class="menu-item" bindtap="goPage" data-url="/pages/borrow/my-borrows/my-borrows">
-        <view class="menu-icon icon-my">📋</view>
-        <text class="menu-text">当前借用</text>
+    <view class="stats-card card">
+      <view class="stat-item" hover-class="press" bindtap="goPage"
+        data-url="/pages/borrow/my-borrows/my-borrows?tab=collected">
+        <text class="stat-num">{{userStats.collected}}</text>
+        <text class="stat-label">借用中</text>
       </view>
-      <view class="menu-item" bindtap="goPage" data-url="/pages/borrow/history/history">
-        <view class="menu-icon icon-history">📜</view>
-        <text class="menu-text">借用记录</text>
+      <view class="stat-divider"></view>
+      <view class="stat-item" hover-class="press" bindtap="goPage"
+        data-url="/pages/borrow/in-transit/in-transit?tab=borrow">
+        <text class="stat-num">{{userStats.borrowing}}</text>
+        <text class="stat-label">借用流程中</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item" hover-class="press" bindtap="goPage"
+        data-url="/pages/borrow/return/return">
+        <text class="stat-num">{{userStats.returning}}</text>
+        <text class="stat-label">归还流程中</text>
       </view>
     </view>
-  </view>
+    <view class="stat-hint">点击数字查看明细</view>
 
-  <!-- 退出登录 -->
-  <view class="logout-section">
-    <button class="btn-default" bindtap="onLogout">退出登录</button>
-  </view>
+    <!-- 主操作：借用 / 归还 -->
+    <view class="action-row">
+      <button class="btn-primary action-btn" hover-class="press-scale" bindtap="goBorrow">
+        <icon name="download" size="36" color="#ffffff" />
+        <text>我要借用</text>
+      </button>
+      <button class="btn-success action-btn" hover-class="press-scale" bindtap="goReturn">
+        <icon name="upload" size="36" color="#ffffff" />
+        <text>我要归还</text>
+      </button>
+    </view>
+
+    <!-- 次要入口 -->
+    <view class="section-title">更多</view>
+    <view class="list-card card">
+      <view class="list-item" hover-class="press" bindtap="goPage" data-url="/pages/item/list/list">
+        <view class="list-icon"><icon name="tag" size="40" /></view>
+        <text class="list-text">货物列表</text>
+        <icon name="chevron-right" size="28" color="#c9cdd4" />
+      </view>
+      <view class="list-item" hover-class="press" bindtap="goPage" data-url="/pages/borrow/history/history">
+        <view class="list-icon"><icon name="clock" size="40" /></view>
+        <text class="list-text">借用记录</text>
+        <icon name="chevron-right" size="28" color="#c9cdd4" />
+      </view>
+    </view>
+  </block>
+
+  <!-- ==================== 管理员视角 ==================== -->
+  <block wx:if="{{isWarehouseAdmin}}">
+    <view class="section-title">仓库总览</view>
+    <view class="stats-card card stats-grid">
+      <view class="stat-item grid-item" hover-class="press" bindtap="goPage"
+        data-url="/subpackages/admin/pages/inventory/inventory">
+        <text class="stat-num">{{adminStats.totalStock}}</text>
+        <text class="stat-label">总库存</text>
+        <text class="stat-sub">可用 {{adminStats.availableStock}}</text>
+      </view>
+      <view class="stat-item grid-item" hover-class="press" bindtap="goPage"
+        data-url="/subpackages/admin/pages/borrow-records/borrow-records?tab=active">
+        <text class="stat-num">{{adminStats.activeBorrows}}</text>
+        <text class="stat-label">借用总量</text>
+        <text class="stat-sub">进行中</text>
+      </view>
+      <view class="stat-item grid-item" hover-class="press" bindtap="goPage"
+        data-url="/subpackages/admin/pages/borrow-records/borrow-records?tab=borrow">
+        <text class="stat-num">{{adminStats.borrowing}}</text>
+        <text class="stat-label">借用流程中</text>
+        <text class="stat-sub">审批 / 领取</text>
+      </view>
+      <view class="stat-item grid-item" hover-class="press" bindtap="goPage"
+        data-url="/subpackages/admin/pages/borrow-records/borrow-records?tab=return">
+        <text class="stat-num">{{adminStats.returning}}</text>
+        <text class="stat-label">归还流程中</text>
+        <text class="stat-sub">借出在外</text>
+      </view>
+    </view>
+
+    <!-- 主操作：库存管理 -->
+    <view class="action-row">
+      <button class="btn-primary action-btn action-btn-wide" hover-class="press-scale"
+        bindtap="goPage" data-url="/subpackages/admin/pages/inventory/inventory">
+        <icon name="box" size="36" color="#ffffff" />
+        <text>库存管理</text>
+      </button>
+    </view>
+
+    <!-- 待办快捷入口（带徽标） -->
+    <view class="section-title">待办事项</view>
+    <view class="list-card card">
+      <view class="list-item" hover-class="press" bindtap="goPage"
+        data-url="/subpackages/admin/pages/borrow-approval/borrow-approval">
+        <view class="list-icon"><icon name="clipboard" size="40" /></view>
+        <text class="list-text">借用审批</text>
+        <view class="badge-sm" wx:if="{{pendingApprovalCount > 0}}">{{pendingApprovalCount}}</view>
+        <icon name="chevron-right" size="28" color="#c9cdd4" />
+      </view>
+      <view class="list-item" hover-class="press" bindtap="goPage"
+        data-url="/subpackages/admin/pages/collect-confirm/collect-confirm">
+        <view class="list-icon"><icon name="download" size="40" /></view>
+        <text class="list-text">领取确认</text>
+        <view class="badge-sm" wx:if="{{pendingCollectCount > 0}}">{{pendingCollectCount}}</view>
+        <icon name="chevron-right" size="28" color="#c9cdd4" />
+      </view>
+      <view class="list-item" hover-class="press" bindtap="goPage"
+        data-url="/subpackages/admin/pages/return-confirm/return-confirm">
+        <view class="list-icon"><icon name="upload" size="40" /></view>
+        <text class="list-text">归还确认</text>
+        <view class="badge-sm" wx:if="{{adminStats.returning > 0}}">{{adminStats.returning}}</view>
+        <icon name="chevron-right" size="28" color="#c9cdd4" />
+      </view>
+      <view class="list-item" hover-class="press" bindtap="goPage"
+        data-url="/subpackages/admin/pages/permission-approval/permission-approval">
+        <view class="list-icon"><icon name="lock" size="40" /></view>
+        <text class="list-text">权限审批</text>
+        <view class="badge-sm" wx:if="{{pendingRoleCount > 0}}">{{pendingRoleCount}}</view>
+        <icon name="chevron-right" size="28" color="#c9cdd4" />
+      </view>
+    </view>
+
+    <view class="more-entry" hover-class="press" bindtap="goManageTab">
+      <text>更多管理功能</text>
+      <icon name="chevron-right" size="28" color="#9aa0a6" />
+    </view>
+  </block>
+
+  <!-- ==================== 无权限用户 ==================== -->
+  <block wx:if="{{!isBorrower && !isWarehouseAdmin}}">
+    <view class="empty-card card">
+      <icon name="lock" size="72" color="#c9cdd4" />
+      <text class="empty-title">暂无借用权限</text>
+      <text class="empty-desc">申请成为借用人员后即可借用仓库物品</text>
+      <button class="btn-primary empty-btn" hover-class="press-scale" bindtap="goPage"
+        data-url="/pages/borrow/apply-role/apply-role">申请借用权限</button>
+    </view>
+  </block>
 </view>

@@ -1,7 +1,9 @@
 const auth = require('../../utils/auth')
 const role = require('../../utils/role')
-const api = require('../../utils/api')
+const util = require('../../utils/util')
+const { userService, itemService, borrowService } = require('../../services/index')
 
+// 统计卡点击跳转映射（在 wxml 中通过 dataset.url 跳转）
 Page({
   data: {
     userInfo: null,
@@ -9,94 +11,176 @@ Page({
     isWarehouseAdmin: false,
     isBorrower: false,
     needApplyRole: false,
-    pendingBorrowCount: 0,
+    statsLoading: true,
+
+    // ===== 普通用户视角统计 =====
+    userStats: {
+      collected: 0,      // 借用中（在手）
+      borrowing: 0,      // 借用流程中（待审批 + 待领取）
+      returning: 0       // 归还流程中（待归还）
+    },
+
+    // ===== 管理员视角统计 =====
+    adminStats: {
+      totalStock: 0,     // 总库存
+      availableStock: 0, // 可用库存
+      activeBorrows: 0,  // 借用总量（进行中）
+      borrowing: 0,      // 借用流程中
+      returning: 0       // 归还流程中
+    },
+
+    // 管理员快捷入口徽标
+    pendingApprovalCount: 0,
+    pendingCollectCount: 0,
     pendingRoleCount: 0
   },
 
-  onLoad() {
-    if (!auth.checkLogin()) return
-  },
-
   onShow() {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 0 })
+    }
+
     const userInfo = auth.getUserInfo()
-    console.log('[INDEX onShow] raw userInfo:', JSON.stringify(userInfo))
     if (!userInfo) {
       wx.redirectTo({ url: '/pages/login/login' })
       return
     }
-    // role 可能是数组或逗号分隔的字符串
-    const r = userInfo.role
-    console.log('[INDEX onShow] userInfo.role raw:', typeof r, r)
-    const roles = Array.isArray(r) ? r : (typeof r === 'string' ? r.split(',').filter(Boolean) : [])
-    console.log('[INDEX onShow] roles parsed:', JSON.stringify(roles))
-    const hasRole = roles.length > 0
-    // 有角色的用户视为已激活（避免飞书里手动加了角色但忘了改 status）
-    const isActive = userInfo.status === 'active' || hasRole
-    const isAdmin = role.isWarehouseAdmin(userInfo)
-    console.log('[INDEX onShow] status:', userInfo.status, '| hasRole:', hasRole, '| isActive:', isActive, '| isAdmin:', isAdmin)
-    const isBorrowerVal = (roles.includes('borrower') || isAdmin) && isActive
-    const needApplyVal = (!hasRole && userInfo.status === 'pending' && !isAdmin) || (!roles.includes('borrower') && !isAdmin && userInfo.status === 'pending_review')
-    console.log('[INDEX onShow] computed -> isBorrower:', isBorrowerVal, '| needApplyRole:', needApplyVal)
 
     this.setData({
       userInfo,
       roleLabel: role.getRoleLabel(userInfo.role),
-      isWarehouseAdmin: isAdmin,
-      isBorrower: isBorrowerVal,
-      needApplyRole: needApplyVal
+      isWarehouseAdmin: role.isWarehouseAdmin(userInfo),
+      isBorrower: role.canBorrow(userInfo),
+      needApplyRole: role.needApplyRole(userInfo)
     })
 
-    // 如果申请已通过但本地缓存未刷新，重新 login 刷新
+    // 权限申请审批中，本地缓存可能滞后，静默刷新
     if (userInfo.status === 'pending_review') {
       this.refreshUserStatus()
+      return
     }
 
-    if (role.isWarehouseAdmin(userInfo)) {
-      this.loadAdminCounts()
-    }
+    this.loadStats()
   },
 
   async refreshUserStatus() {
     try {
       const userInfo = await auth.doLogin()
-      const r2 = userInfo.role
-      const roles2 = Array.isArray(r2) ? r2 : (typeof r2 === 'string' ? r2.split(',').filter(Boolean) : [])
-      const hasRole2 = roles2.length > 0
-      const isActive2 = userInfo.status === 'active' || hasRole2
-      const isAdmin2 = role.isWarehouseAdmin(userInfo)
       this.setData({
         userInfo,
         roleLabel: role.getRoleLabel(userInfo.role),
-        isWarehouseAdmin: isAdmin2,
-        isBorrower: (roles2.includes('borrower') || isAdmin2) && isActive2,
-        needApplyRole: userInfo.status !== 'active' && !roles2.includes('borrower') && !isAdmin2
+        isWarehouseAdmin: role.isWarehouseAdmin(userInfo),
+        isBorrower: role.canBorrow(userInfo),
+        needApplyRole: role.needApplyRole(userInfo)
       })
-    } catch (err) { /* ignore */ }
+      this.loadStats()
+    } catch (err) { /* 静默失败，下次 onShow 会重试 */ }
   },
 
-  async loadAdminCounts() {
-    try {
-      const borrowList = await api.getBorrowList({ status: 'pending_approval' })
-      this.setData({ pendingBorrowCount: borrowList.length || 0 })
-    } catch (err) { /* ignore */ }
-    try {
-      const allUsers = await api.getUserList()
-      const pendingUsers = allUsers.filter(u => u.status === 'pending_review')
-      this.setData({ pendingRoleCount: pendingUsers.length || 0 })
-    } catch (err) { /* ignore */ }
+  /**
+   * 按角色并行加载统计数据，单次 setData 批量更新
+   */
+  async loadStats() {
+    this.setData({ statsLoading: true })
+    const { userInfo, isWarehouseAdmin, isBorrower } = this.data
+
+    if (isWarehouseAdmin) {
+      await this.loadAdminStats()
+    } else if (isBorrower) {
+      await this.loadUserStats(userInfo)
+    } else {
+      this.setData({ statsLoading: false })
+    }
   },
 
+  /**
+   * 普通用户：借用中 / 借用流程中 / 归还流程中
+   */
+  async loadUserStats(userInfo) {
+    const [pending, approved, collected] = await Promise.allSettled([
+      borrowService.getBorrowList({ borrowerId: userInfo.openid, status: 'pending_approval' }),
+      borrowService.getBorrowList({ borrowerId: userInfo.openid, status: 'approved' }),
+      borrowService.getBorrowList({ borrowerId: userInfo.openid, status: 'collected' })
+    ])
+
+    const pendingCount = pending.status === 'fulfilled' ? pending.value.length : 0
+    const approvedCount = approved.status === 'fulfilled' ? approved.value.length : 0
+    const collectedCount = collected.status === 'fulfilled' ? collected.value.length : 0
+
+    this.setData({
+      'userStats.collected': collectedCount,
+      'userStats.borrowing': pendingCount + approvedCount,
+      'userStats.returning': collectedCount,
+      statsLoading: false
+    })
+  },
+
+  /**
+   * 管理员：总库存 / 借用总量 / 借用流程中 / 归还流程中 + 待办徽标
+   */
+  async loadAdminStats() {
+    const [items, allBorrows, allUsers] = await Promise.allSettled([
+      itemService.getItemList({ status: 'active' }),
+      borrowService.getBorrowList({}),
+      userService.getUserList()
+    ])
+
+    const updates = { statsLoading: false }
+
+    if (items.status === 'fulfilled') {
+      let total = 0
+      let available = 0
+      items.value.forEach(i => {
+        total += Number(i.total_quantity) || 0
+        available += Number(i.available_quantity) || 0
+      })
+      updates['adminStats.totalStock'] = total
+      updates['adminStats.availableStock'] = available
+    }
+
+    if (allBorrows.status === 'fulfilled') {
+      const list = allBorrows.value
+      const pending = list.filter(r => r.status === 'pending_approval').length
+      const approved = list.filter(r => r.status === 'approved').length
+      const collected = list.filter(r => r.status === 'collected').length
+      updates['adminStats.activeBorrows'] = pending + approved + collected
+      updates['adminStats.borrowing'] = pending + approved
+      updates['adminStats.returning'] = collected
+      updates.pendingApprovalCount = pending
+      updates.pendingCollectCount = approved
+    }
+
+    if (allUsers.status === 'fulfilled') {
+      updates.pendingRoleCount = allUsers.value.filter(u => u.status === 'pending_review').length || 0
+    }
+
+    this.setData(updates)
+  },
+
+  // ===== 导航 =====
   goPage(e) {
     wx.navigateTo({ url: e.currentTarget.dataset.url })
   },
 
+  goManageTab() {
+    wx.switchTab({ url: '/pages/manage/manage' })
+  },
+
+  goBorrow() {
+    wx.navigateTo({ url: '/pages/borrow/apply/apply' })
+  },
+
+  goReturn() {
+    wx.navigateTo({ url: '/pages/borrow/return/return' })
+  },
+
+  onPullDownRefresh() {
+    this.loadStats().then(() => wx.stopPullDownRefresh())
+  },
+
   onLogout() {
-    wx.showModal({
-      title: '提示',
-      content: '确定退出登录？',
-      success(res) {
-        if (res.confirm) auth.logout()
-      }
+    util.confirm('提示', '确定退出登录？').then(confirmed => {
+      if (confirmed) auth.logout()
     })
   }
 })

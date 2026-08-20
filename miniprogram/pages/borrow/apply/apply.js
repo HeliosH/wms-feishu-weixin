@@ -75,7 +75,9 @@ Page({
         try {
           const fileID = await api.uploadPhoto(tempPath)
           util.hideLoading()
-          this.setData({ photoUrl: fileID })
+          // 提交时用原始相对路径，预览时解析为完整 URL
+          this._photoFileId = fileID
+          this.setData({ photoUrl: util.resolveFileUrl(fileID) })
         } catch (err) {
           util.hideLoading()
           util.showToast('上传失败')
@@ -109,11 +111,11 @@ Page({
         itemId: this.data.itemId,
         quantity: qty,
         remark: this.data.remark,
-        photoUrl: this.data.photoUrl
+        photoUrl: this._photoFileId
       })
       util.showToast('申请已提交', 'success')
       setTimeout(() => {
-        wx.navigateBack()
+        wx.navigateBack({ delta: 1, fail: () => wx.switchTab({ url: '/pages/borrow/borrow' }) })
       }, 1000)
     } catch (err) {
       util.showToast(err.message || '提交失败')

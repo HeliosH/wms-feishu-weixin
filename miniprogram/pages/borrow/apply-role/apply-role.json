@@ -1,1 +1,6 @@
-{"navigationBarTitleText":"申请权限"}
+{
+  "navigationBarTitleText": "申请权限",
+  "usingComponents": {
+    "icon": "/components/icon/icon"
+  }
+}

@@ -1,7 +1,9 @@
 const axios = require('axios')
 
-const FEISHU_AUTH_URL = 'https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal'
-const FEISHU_BITABLE_BASE = 'https://open.feishu.cn/open-apis/bitable/v1/apps'
+// 支持 FEISHU_BASE_URL 覆盖（用于本地 E2E 测试 mock，默认为真实飞书地址）
+const FEISHU_BASE_URL = process.env.FEISHU_BASE_URL || 'https://open.feishu.cn'
+const FEISHU_AUTH_URL = `${FEISHU_BASE_URL}/open-apis/auth/v3/tenant_access_token/internal`
+const FEISHU_BITABLE_BASE = `${FEISHU_BASE_URL}/open-apis/bitable/v1/apps`
 
 /**
  * @param {Object} config

@@ -12,6 +12,7 @@ Page({
 
   onShow() {
     this.loadItems()
+    this._photoFileId = null
     this.setData({ photoUrl: '', returning: null })
   },
 
@@ -34,10 +35,12 @@ Page({
 
   selectItem(e) {
     const id = e.currentTarget.dataset.id
+    this._photoFileId = null
     this.setData({ returning: id, photoUrl: '' })
   },
 
   cancelReturn() {
+    this._photoFileId = null
     this.setData({ returning: null, photoUrl: '' })
   },
 
@@ -52,7 +55,9 @@ Page({
         try {
           const fileID = await api.uploadPhoto(tempPath)
           util.hideLoading()
-          this.setData({ photoUrl: fileID })
+          // 提交时用原始相对路径，预览时解析为完整 URL
+          this._photoFileId = fileID
+          this.setData({ photoUrl: util.resolveFileUrl(fileID) })
         } catch (err) {
           util.hideLoading()
           util.showToast('上传失败')
@@ -70,8 +75,9 @@ Page({
     if (!recordId) return
 
     try {
-      await api.confirmReturn(recordId, this.data.photoUrl)
+      await api.confirmReturn(recordId, this._photoFileId)
       util.showToast('归还成功', 'success')
+      this._photoFileId = null
       this.setData({ returning: null, photoUrl: '' })
       this.loadItems()
     } catch (err) {

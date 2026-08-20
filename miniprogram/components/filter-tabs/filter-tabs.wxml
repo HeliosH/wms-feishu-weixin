@@ -1,0 +1,16 @@
+<!-- 筛选标签栏组件 -->
+<scroll-view scroll-x class="filter-scroll" enhanced show-scrollbar="{{false}}">
+  <view class="filter-tabs">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="value"
+      class="filter-item {{currentValue === item.value ? 'filter-active' : ''}}"
+      data-value="{{item.value}}"
+      data-index="{{index}}"
+      bindtap="onSelect"
+    >
+      {{item.label}}
+      <text class="filter-badge" wx:if="{{item.count > 0}}">{{item.count}}</text>
+    </view>
+  </view>
+</scroll-view>

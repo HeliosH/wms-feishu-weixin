@@ -7,9 +7,9 @@
     </view>
 
     <scroll-view class="overview-scroll" scroll-x="true" wx:if="{{overviewItems.length > 0}}">
-      <view class="overview-card" wx:for="{{overviewItems}}" wx:key="_id" bindtap="goItemBorrowers" data-id="{{item._id}}">
+      <view class="overview-card" hover-class="press" wx:for="{{overviewItems}}" wx:key="_id" bindtap="goItemBorrowers" data-id="{{item._id}}">
         <view class="ov-icon-wrap">
-          <text class="ov-icon-text">📦</text>
+          <icon name="box" size="36" />
         </view>
         <text class="ov-name">{{item.name}}</text>
         <view class="ov-stats">
@@ -28,7 +28,7 @@
     </scroll-view>
 
     <view class="overview-empty card" wx:elif="{{!overviewLoading}}">
-      <text class="empty-icon">📭</text>
+      <icon name="inbox" size="64" color="#c9cdd4" />
       <text class="empty-text">暂无借出货物</text>
     </view>
   </view>
@@ -36,34 +36,34 @@
   <!-- ===== 库存管理 ===== -->
   <view class="tab-content" wx:if="{{activeTab === 'inventory'}}">
     <view class="big-actions">
-      <view class="big-card" bindtap="goPage" data-url="/pages/admin/inventory/inventory">
-        <view class="big-icon-wrap add-bg">
-          <text class="big-icon-text">＋</text>
+      <view class="big-card" hover-class="press-scale" hover-stay-time="80" bindtap="goPage" data-url="/subpackages/admin/pages/inventory/inventory">
+        <view class="big-icon-wrap solid">
+          <icon name="plus-circle" size="44" color="#ffffff" />
         </view>
         <text class="big-title">新增货品</text>
         <text class="big-sub">录入新货物信息</text>
       </view>
-      <view class="big-card" bindtap="goPage" data-url="/pages/admin/inventory/inventory">
-        <view class="big-icon-wrap adjust-bg">
-          <text class="big-icon-text">⇄</text>
+      <view class="big-card" hover-class="press-scale" hover-stay-time="80" bindtap="goPage" data-url="/subpackages/admin/pages/inventory/inventory">
+        <view class="big-icon-wrap outline">
+          <icon name="swap" size="44" />
         </view>
         <text class="big-title">调整库存</text>
         <text class="big-sub">入库 · 出库 · 盘点</text>
       </view>
     </view>
     <view class="aux-list">
-      <view class="aux-card card" bindtap="goPage" data-url="/pages/item/list/list">
-        <view class="aux-icon-wrap blue-bg"><text class="aux-emoji">📋</text></view>
+      <view class="aux-card card" hover-class="press" bindtap="goPage" data-url="/pages/item/list/list">
+        <view class="aux-icon-wrap"><icon name="clipboard" size="36" /></view>
         <text class="aux-label">查看库存</text>
         <text class="aux-arrow">›</text>
       </view>
-      <view class="aux-card card" bindtap="goPage" data-url="/pages/admin/category/category">
-        <view class="aux-icon-wrap purple-bg"><text class="aux-emoji">🏷️</text></view>
+      <view class="aux-card card" hover-class="press" bindtap="goPage" data-url="/subpackages/admin/pages/category/category">
+        <view class="aux-icon-wrap"><icon name="tag" size="36" /></view>
         <text class="aux-label">类型管理</text>
         <text class="aux-arrow">›</text>
       </view>
-      <view class="aux-card card" bindtap="goPage" data-url="/pages/admin/inventory-log/inventory-log">
-        <view class="aux-icon-wrap orange-bg"><text class="aux-emoji">📊</text></view>
+      <view class="aux-card card" hover-class="press" bindtap="goPage" data-url="/subpackages/admin/pages/inventory-log/inventory-log">
+        <view class="aux-icon-wrap"><icon name="chart" size="36" /></view>
         <text class="aux-label">变更记录</text>
         <text class="aux-arrow">›</text>
       </view>
@@ -73,8 +73,8 @@
   <!-- ===== 流程管理 ===== -->
   <view class="tab-content" wx:if="{{activeTab === 'flow'}}">
     <view class="flow-list">
-      <view class="flow-card card" bindtap="goPage" data-url="/pages/admin/borrow-approval/borrow-approval">
-        <view class="flow-icon-wrap green-bg"><text class="flow-emoji">✅</text></view>
+      <view class="flow-card card" hover-class="press" bindtap="goPage" data-url="/subpackages/admin/pages/borrow-approval/borrow-approval">
+        <view class="flow-icon-wrap"><icon name="check-circle" size="36" /></view>
         <view class="flow-info">
           <text class="flow-title">借用审批</text>
           <text class="flow-desc">审核借用申请</text>
@@ -82,8 +82,8 @@
         <view class="flow-badge" wx:if="{{pendingBorrowCount > 0}}">{{pendingBorrowCount}}</view>
         <text class="flow-arrow">›</text>
       </view>
-      <view class="flow-card card" bindtap="goPage" data-url="/pages/admin/collect-confirm/collect-confirm">
-        <view class="flow-icon-wrap blue-bg"><text class="flow-emoji">📥</text></view>
+      <view class="flow-card card" hover-class="press" bindtap="goPage" data-url="/subpackages/admin/pages/collect-confirm/collect-confirm">
+        <view class="flow-icon-wrap"><icon name="download" size="36" /></view>
         <view class="flow-info">
           <text class="flow-title">领取确认</text>
           <text class="flow-desc">确认货物已交付</text>
@@ -91,8 +91,8 @@
         <view class="flow-badge" wx:if="{{approvedCount > 0}}">{{approvedCount}}</view>
         <text class="flow-arrow">›</text>
       </view>
-      <view class="flow-card card" bindtap="goPage" data-url="/pages/admin/return-confirm/return-confirm">
-        <view class="flow-icon-wrap purple-bg"><text class="flow-emoji">📤</text></view>
+      <view class="flow-card card" hover-class="press" bindtap="goPage" data-url="/subpackages/admin/pages/return-confirm/return-confirm">
+        <view class="flow-icon-wrap"><icon name="upload" size="36" /></view>
         <view class="flow-info">
           <text class="flow-title">归还确认</text>
           <text class="flow-desc">确认货物已归还</text>
@@ -100,8 +100,8 @@
         <view class="flow-badge" wx:if="{{collectedCount > 0}}">{{collectedCount}}</view>
         <text class="flow-arrow">›</text>
       </view>
-      <view class="flow-card card" bindtap="goPage" data-url="/pages/admin/backfill/backfill">
-        <view class="flow-icon-wrap orange-bg"><text class="flow-emoji">📝</text></view>
+      <view class="flow-card card" hover-class="press" bindtap="goPage" data-url="/subpackages/admin/pages/backfill/backfill">
+        <view class="flow-icon-wrap"><icon name="edit" size="36" /></view>
         <view class="flow-info">
           <text class="flow-title">补录领取</text>
           <text class="flow-desc">历史数据补录</text>
@@ -113,8 +113,8 @@
 
   <!-- ===== 角色管理 ===== -->
   <view class="tab-content" wx:if="{{activeTab === 'role'}}">
-    <view class="flow-card card" bindtap="goPage" data-url="/pages/admin/permission-approval/permission-approval">
-      <view class="flow-icon-wrap red-bg"><text class="flow-emoji">🔐</text></view>
+    <view class="flow-card card" hover-class="press" bindtap="goPage" data-url="/subpackages/admin/pages/permission-approval/permission-approval">
+      <view class="flow-icon-wrap"><icon name="lock" size="36" /></view>
       <view class="flow-info">
         <text class="flow-title">权限审批</text>
         <text class="flow-desc">审核用户角色申请</text>
@@ -128,7 +128,7 @@
       <text class="section-sub">点击用户修改角色</text>
     </view>
     <view class="user-list" wx:if="{{!usersLoading}}">
-      <view class="user-row card" wx:for="{{users}}" wx:key="_id" bindtap="onEditRole" data-index="{{index}}">
+      <view class="user-row card" hover-class="press" wx:for="{{users}}" wx:key="_id" bindtap="onEditRole" data-index="{{index}}">
         <image class="user-avatar" src="{{item.avatar_url || '/images/warehouse-logo.png'}}" mode="aspectFill" />
         <view class="user-body">
           <text class="user-name">{{item.name || '未设置姓名'}}</text>
@@ -147,14 +147,14 @@
 
   <!-- ===== 子 Tab 栏 ===== -->
   <view class="sub-tab-bar">
-    <view class="sub-tab {{activeTab === 'inventory' ? 'active' : ''}}" bindtap="switchTab" data-tab="inventory">
+    <view class="sub-tab {{activeTab === 'inventory' ? 'active' : ''}}" hover-class="press" bindtap="switchTab" data-tab="inventory">
       <text>库存管理</text>
     </view>
-    <view class="sub-tab {{activeTab === 'flow' ? 'active' : ''}}" bindtap="switchTab" data-tab="flow">
+    <view class="sub-tab {{activeTab === 'flow' ? 'active' : ''}}" hover-class="press" bindtap="switchTab" data-tab="flow">
       <text>流程管理</text>
       <view class="sub-dot" wx:if="{{pendingBorrowCount + pendingRoleCount > 0}}"></view>
     </view>
-    <view class="sub-tab {{activeTab === 'role' ? 'active' : ''}}" bindtap="switchTab" data-tab="role">
+    <view class="sub-tab {{activeTab === 'role' ? 'active' : ''}}" hover-class="press" bindtap="switchTab" data-tab="role">
       <text>角色管理</text>
       <view class="sub-dot" wx:if="{{pendingRoleCount > 0}}"></view>
     </view>
@@ -176,8 +176,8 @@
     </view>
     <text class="role-hint">可同时勾选多个角色</text>
     <view class="modal-btns">
-      <button class="btn-default modal-btn" bindtap="onCloseModal">取消</button>
-      <button class="btn-primary modal-btn" bindtap="onSaveRole">保存</button>
+      <button class="btn-default modal-btn" hover-class="press" bindtap="onCloseModal">取消</button>
+      <button class="btn-primary modal-btn" hover-class="press" bindtap="onSaveRole">保存</button>
     </view>
   </view>
 </view>

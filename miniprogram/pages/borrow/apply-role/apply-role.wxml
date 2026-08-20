@@ -10,12 +10,12 @@
   </view>
 
   <view class="status-card card" wx:if="{{status === 'pending_review'}}">
-    <text class="status-icon">⏳</text>
+    <icon name="clock" size="48" color="#fa8c16" />
     <text class="status-text">申请已提交，等待审批中</text>
   </view>
 
   <view class="status-card card" wx:if="{{status === 'active' || hasBorrower}}">
-    <text class="status-icon">✅</text>
+    <icon name="check-circle" size="48" color="#52c41a" />
     <text class="status-text">你已经是借用人员</text>
   </view>
 

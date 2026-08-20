@@ -1,5 +1,10 @@
-const api = require('./api')
+/**
+ * 用户认证状态管理
+ */
+const authService = require('../services/auth.service')
+const userService = require('../services/user.service')
 const token = require('./token')
+const { USER_INFO_KEY } = require('./config')
 
 let _userInfo = null
 
@@ -8,16 +13,16 @@ function getUserInfo() {
 }
 
 function setUserInfo(info) {
-  _userInfo = info
+  _userInfo = info || null
   if (info) {
-    wx.setStorageSync('userInfo', info)
+    wx.setStorageSync(USER_INFO_KEY, info)
   } else {
-    wx.removeStorageSync('userInfo')
+    wx.removeStorageSync(USER_INFO_KEY)
   }
 }
 
 function loadCachedUser() {
-  const cached = wx.getStorageSync('userInfo')
+  const cached = wx.getStorageSync(USER_INFO_KEY)
   if (cached) {
     _userInfo = cached
   }
@@ -37,21 +42,26 @@ function checkLogin() {
 }
 
 function goHome() {
-  wx.switchTab({ url: '/pages/borrow/borrow' })
+  wx.switchTab({ url: '/pages/index/index' })
 }
 
+/**
+ * 完整登录流程：wx.login → 换 JWT → 获取用户信息
+ */
 async function doLogin() {
-  const code = await new Promise((resolve, reject) => {
-    wx.login({ success: res => resolve(res.code), fail: reject })
+  // Step 1: wx.login 获取 code
+  const { code } = await new Promise((resolve, reject) => {
+    wx.login({ success: resolve, fail: reject })
   })
 
-  console.log('[AUTH doLogin] wx.login code obtained')
-  const authData = await api.authLogin(code)
-  console.log('[AUTH doLogin] authLogin response:', JSON.stringify(authData))
+  if (!code) throw new Error('微信登录失败：未获取到 code')
+
+  // Step 2: 用 code 换 JWT token
+  const authData = await authService.authLogin(code)
   token.setToken(authData.token)
 
-  const userInfo = await api.login()
-  console.log('[AUTH doLogin] login response userInfo:', JSON.stringify(userInfo))
+  // Step 3: 获取用户信息
+  const userInfo = await userService.login()
   setUserInfo(userInfo)
   return userInfo
 }

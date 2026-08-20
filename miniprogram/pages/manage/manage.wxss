@@ -20,7 +20,7 @@
 
 .section-sub {
   font-size: 24rpx;
-  color: #999;
+  color: #9aa0a6;
   margin-left: 12rpx;
 }
 
@@ -40,10 +40,10 @@
   align-items: center;
   width: 200rpx;
   background: #fff;
-  border-radius: 20rpx;
+  border-radius: 16rpx;
   padding: 24rpx 16rpx 20rpx;
   margin-right: 16rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.03);
   white-space: normal;
   vertical-align: top;
 }
@@ -52,15 +52,11 @@
   width: 64rpx;
   height: 64rpx;
   border-radius: 16rpx;
-  background: #fff7e6;
+  background: #f2f4f7;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 12rpx;
-}
-
-.ov-icon-text {
-  font-size: 32rpx;
 }
 
 .ov-name {
@@ -91,12 +87,12 @@
 .ov-divider {
   width: 1rpx;
   height: 36rpx;
-  background: #f0f0f0;
+  background: #f2f3f5;
 }
 
 .ov-num {
   font-size: 32rpx;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .ov-num.warn { color: #fa8c16; }
@@ -105,7 +101,7 @@
 
 .ov-label {
   font-size: 20rpx;
-  color: #999;
+  color: #9aa0a6;
   margin-top: 2rpx;
 }
 
@@ -121,10 +117,9 @@
   padding: 36rpx 24rpx;
 }
 
-.empty-icon { font-size: 48rpx; margin-bottom: 10rpx; }
-.empty-text { font-size: 26rpx; color: #999; }
+.empty-text { font-size: 26rpx; color: #9aa0a6; margin-top: 12rpx; }
 
-/* ===== 库存管理 - 大按钮 ===== */
+/* ===== 库存管理 - 大按钮（扁平双色） ===== */
 .big-actions {
   display: flex;
   gap: 20rpx;
@@ -134,9 +129,9 @@
 .big-card {
   flex: 1;
   background: #fff;
-  border-radius: 20rpx;
+  border-radius: 16rpx;
   padding: 36rpx 24rpx 30rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.03);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -146,27 +141,19 @@
 .big-icon-wrap {
   width: 80rpx;
   height: 80rpx;
-  border-radius: 20rpx;
+  border-radius: 22rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 18rpx;
 }
 
-.big-icon-text {
-  font-size: 44rpx;
-  color: #fff;
-  font-weight: 600;
+.big-icon-wrap.solid {
+  background: #1890ff;
 }
 
-.add-bg {
-  background: linear-gradient(135deg, #1890ff, #40a9ff);
-  box-shadow: 0 6rpx 16rpx rgba(24, 144, 255, 0.25);
-}
-
-.adjust-bg {
-  background: linear-gradient(135deg, #722ed1, #9254de);
-  box-shadow: 0 6rpx 16rpx rgba(114, 46, 209, 0.25);
+.big-icon-wrap.outline {
+  background: #eef6ff;
 }
 
 .big-title {
@@ -178,10 +165,10 @@
 
 .big-sub {
   font-size: 22rpx;
-  color: #999;
+  color: #9aa0a6;
 }
 
-/* 辅助入口 */
+/* ===== 辅助入口（统一图标底色） ===== */
 .aux-list {
   display: flex;
   flex-direction: column;
@@ -197,21 +184,13 @@
   width: 60rpx;
   height: 60rpx;
   border-radius: 14rpx;
+  background: #f2f4f7;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 20rpx;
   flex-shrink: 0;
 }
-
-.aux-emoji {
-  font-size: 30rpx;
-}
-
-.blue-bg  { background: #e6f7ff; }
-.purple-bg { background: #f9f0ff; }
-.orange-bg { background: #fff7e6; }
-.red-bg    { background: #fff2f0; }
 
 .aux-label {
   flex: 1;
@@ -222,7 +201,7 @@
 
 .aux-arrow {
   font-size: 32rpx;
-  color: #ccc;
+  color: #c9cdd4;
 }
 
 /* ===== 流程管理 ===== */
@@ -241,22 +220,13 @@
   width: 64rpx;
   height: 64rpx;
   border-radius: 16rpx;
+  background: #f2f4f7;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 20rpx;
   flex-shrink: 0;
 }
-
-.flow-emoji {
-  font-size: 30rpx;
-}
-
-.green-bg  { background: #f6ffed; }
-.blue-bg   { background: #e6f7ff; }
-.purple-bg { background: #f9f0ff; }
-.orange-bg { background: #fff7e6; }
-.red-bg    { background: #fff2f0; }
 
 .flow-info {
   flex: 1;
@@ -272,7 +242,7 @@
 
 .flow-desc {
   font-size: 24rpx;
-  color: #999;
+  color: #9aa0a6;
   margin-top: 4rpx;
 }
 
@@ -292,7 +262,7 @@
 
 .flow-arrow {
   font-size: 32rpx;
-  color: #ccc;
+  color: #c9cdd4;
 }
 
 /* ===== 角色管理 ===== */
@@ -314,8 +284,8 @@
 .user-avatar {
   width: 72rpx;
   height: 72rpx;
-  border-radius: 18rpx;
-  background: #e8e8e8;
+  border-radius: 50%;
+  background: #f2f3f5;
   margin-right: 16rpx;
   flex-shrink: 0;
 }
@@ -342,7 +312,7 @@
 
 .user-arrow {
   font-size: 32rpx;
-  color: #ccc;
+  color: #c9cdd4;
   margin-left: 8rpx;
 }
 
@@ -354,7 +324,7 @@
   right: 0;
   background: #fff;
   display: flex;
-  border-top: 1rpx solid #f0f0f0;
+  border-top: 1rpx solid #f2f3f5;
   padding-bottom: env(safe-area-inset-bottom);
   z-index: 10;
 }
@@ -367,7 +337,7 @@
   padding: 24rpx 0;
   position: relative;
   font-size: 28rpx;
-  color: #999;
+  color: #9aa0a6;
   font-weight: 500;
 }
 
@@ -411,7 +381,7 @@
 .modal-content {
   width: 600rpx;
   background: #fff;
-  border-radius: 24rpx;
+  border-radius: 16rpx;
   padding: 40rpx;
 }
 
@@ -426,7 +396,7 @@
 
 .modal-sub {
   font-size: 26rpx;
-  color: #999;
+  color: #9aa0a6;
   font-weight: 400;
   margin-top: 4rpx;
 }
@@ -451,7 +421,7 @@
 .role-hint {
   display: block;
   font-size: 24rpx;
-  color: #999;
+  color: #9aa0a6;
   margin-top: 16rpx;
 }
 
@@ -464,7 +434,7 @@
 .modal-btn {
   flex: 1;
   font-size: 30rpx;
-  border-radius: 14rpx;
+  border-radius: 16rpx;
   padding: 22rpx 0;
   text-align: center;
 }

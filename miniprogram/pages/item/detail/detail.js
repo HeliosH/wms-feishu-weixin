@@ -41,14 +41,14 @@ Page({
   },
 
   goAdjust() {
-    wx.navigateTo({ url: `/pages/admin/inventory/inventory?id=${this.data.itemId}` })
+    wx.navigateTo({ url: `/subpackages/admin/pages/inventory/inventory?id=${this.data.itemId}` })
   },
 
   goLog() {
-    wx.navigateTo({ url: `/pages/admin/inventory-log/inventory-log?itemId=${this.data.itemId}` })
+    wx.navigateTo({ url: `/subpackages/admin/pages/inventory-log/inventory-log?itemId=${this.data.itemId}` })
   },
 
   goBorrowers() {
-    wx.navigateTo({ url: `/pages/admin/item-borrowers/item-borrowers?itemId=${this.data.itemId}` })
+    wx.navigateTo({ url: `/subpackages/admin/pages/item-borrowers/item-borrowers?itemId=${this.data.itemId}` })
   }
 })

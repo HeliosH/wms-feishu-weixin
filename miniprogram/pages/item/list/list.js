@@ -67,6 +67,6 @@ Page({
   },
 
   goAddItem() {
-    wx.navigateTo({ url: '/pages/admin/inventory/inventory' })
+    wx.navigateTo({ url: '/subpackages/admin/pages/inventory/inventory' })
   }
 })

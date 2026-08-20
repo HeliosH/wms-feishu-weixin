@@ -1,0 +1,44 @@
+<view class="page">
+  <!-- 状态筛选 tabs（可横向滚动） -->
+  <scroll-view class="tab-bar" scroll-x enable-flex>
+    <view class="tab {{activeTab === item.key ? 'active' : ''}}"
+      wx:for="{{tabs}}"
+      wx:key="key"
+      hover-class="press"
+      bindtap="switchTab"
+      data-tab="{{item.key}}">
+      <text>{{item.label}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- 记录列表 -->
+  <view class="record-list">
+    <view class="record-card card" wx:for="{{records}}" wx:key="_id">
+      <view class="record-header">
+        <text class="record-name">{{item.item_name}}</text>
+        <text class="tag {{item.statusTagClass}}">{{item.statusLabel}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">借用人</text>
+        <text class="record-value">{{item.borrower_name}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">数量</text>
+        <text class="record-value">{{item.quantity}}</text>
+      </view>
+      <view class="record-row">
+        <text class="record-label">申请时间</text>
+        <text class="record-value">{{item.apply_time_str}}</text>
+      </view>
+      <view class="record-row" wx:if="{{item.reject_reason}}">
+        <text class="record-label">驳回原因</text>
+        <text class="record-value reject">{{item.reject_reason}}</text>
+      </view>
+    </view>
+
+    <view class="empty" wx:if="{{!loading && records.length === 0}}">
+      <icon name="inbox" size="72" color="#c9cdd4" />
+      <text class="empty-text">暂无相关记录</text>
+    </view>
+  </view>
+</view>

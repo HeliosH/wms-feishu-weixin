@@ -1,7 +1,7 @@
-const api = require('../../utils/api')
 const auth = require('../../utils/auth')
 const role = require('../../utils/role')
 const util = require('../../utils/util')
+const { borrowService } = require('../../services/index')
 
 Page({
   data: {
@@ -22,23 +22,20 @@ Page({
       wx.redirectTo({ url: '/pages/login/login' })
       return
     }
-    const r = userInfo.role
-    const roles = Array.isArray(r) ? r : (typeof r === 'string' ? r.split(',').filter(Boolean) : [])
-    const hasRole = roles.length > 0
-    const isActive = userInfo.status === 'active' || hasRole
-    const isAdmin = role.isWarehouseAdmin(userInfo)
-    const isBorrower = (roles.includes('borrower') || isAdmin) && isActive
-    const needApply = (!hasRole && userInfo.status === 'pending' && !isAdmin) ||
-      (!roles.includes('borrower') && !isAdmin && userInfo.status === 'pending_review')
 
-    this.setData({ userInfo, isBorrower, needApplyRole: needApply })
+    this.setData({
+      userInfo,
+      isBorrower: role.canBorrow(userInfo),
+      needApplyRole: role.needApplyRole(userInfo)
+    })
 
+    // 如果申请已通过但本地缓存未刷新，重新 login 刷新
     if (userInfo.status === 'pending_review') {
       this.refreshUserStatus()
       return
     }
 
-    if (isBorrower) {
+    if (role.canBorrow(userInfo)) {
       this.loadMyItems()
     }
   },
@@ -46,26 +43,22 @@ Page({
   async refreshUserStatus() {
     try {
       const userInfo = await auth.doLogin()
-      const r2 = userInfo.role
-      const roles2 = Array.isArray(r2) ? r2 : (typeof r2 === 'string' ? r2.split(',').filter(Boolean) : [])
-      const hasRole2 = roles2.length > 0
-      const isActive2 = userInfo.status === 'active' || hasRole2
-      const isAdmin2 = role.isWarehouseAdmin(userInfo)
+      const canBorrow = role.canBorrow(userInfo)
       this.setData({
         userInfo,
-        isBorrower: (roles2.includes('borrower') || isAdmin2) && isActive2,
-        needApplyRole: userInfo.status !== 'active' && !roles2.includes('borrower') && !isAdmin2
+        isBorrower: canBorrow,
+        needApplyRole: role.needApplyRole(userInfo)
       })
-      if ((roles2.includes('borrower') || isAdmin2) && isActive2) {
+      if (canBorrow) {
         this.loadMyItems()
       }
-    } catch (err) { /* ignore */ }
+    } catch (err) { /* 静默失败，下次 onShow 会重试 */ }
   },
 
   async loadMyItems() {
     this.setData({ myItemsLoading: true })
     try {
-      const records = await api.getBorrowList({
+      const records = await borrowService.getBorrowList({
         borrowerId: this.data.userInfo.openid,
         status: 'collected'
       })
@@ -75,7 +68,7 @@ Page({
           collectTimeStr: util.formatDate(r.collect_time)
         }))
       })
-    } catch (err) { /* ignore */ } finally {
+    } catch (err) { /* 错误已由 request 层统一 toast */ } finally {
       this.setData({ myItemsLoading: false })
     }
   },

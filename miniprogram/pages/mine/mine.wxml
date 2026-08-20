@@ -1,6 +1,6 @@
 <view class="page">
   <!-- 用户信息 -->
-  <view class="user-card card" bindtap="goProfile">
+  <view class="user-card card" hover-class="press" bindtap="goProfile">
     <image class="avatar" src="{{userInfo.avatar_url || '/images/warehouse-logo.png'}}" mode="aspectFill" />
     <view class="user-info">
       <text class="user-name">{{userInfo.name || '点击设置姓名'}}</text>
@@ -11,9 +11,9 @@
 
   <!-- 申请权限 -->
   <view class="section" wx:if="{{needApplyRole}}">
-    <view class="apply-banner card" bindtap="goPage" data-url="/pages/borrow/apply-role/apply-role">
+    <view class="apply-banner card" hover-class="press" bindtap="goPage" data-url="/pages/borrow/apply-role/apply-role">
       <view class="apply-icon-box">
-        <text>🔐</text>
+        <icon name="lock" size="40" />
       </view>
       <view class="apply-text">
         <text class="apply-title">申请借用权限</text>
@@ -27,20 +27,20 @@
   <view class="section" wx:if="{{isBorrower}}">
     <view class="section-title">我的借用</view>
     <view class="menu-card card">
-      <view class="menu-row" bindtap="goPage" data-url="/pages/borrow/my-borrows/my-borrows">
-        <view class="menu-icon-box blue-bg"><text class="menu-emoji">📋</text></view>
+      <view class="menu-row" hover-class="press" bindtap="goPage" data-url="/pages/borrow/my-borrows/my-borrows">
+        <view class="menu-icon-box"><icon name="clipboard" size="36" /></view>
         <text class="menu-text">当前借用</text>
         <text class="menu-arrow">›</text>
       </view>
       <view class="menu-divider"></view>
-      <view class="menu-row" bindtap="goPage" data-url="/pages/borrow/history/history">
-        <view class="menu-icon-box orange-bg"><text class="menu-emoji">📜</text></view>
+      <view class="menu-row" hover-class="press" bindtap="goPage" data-url="/pages/borrow/history/history">
+        <view class="menu-icon-box"><icon name="clock" size="36" /></view>
         <text class="menu-text">借用记录</text>
         <text class="menu-arrow">›</text>
       </view>
       <view class="menu-divider"></view>
-      <view class="menu-row" bindtap="goPage" data-url="/pages/borrow/in-transit/in-transit">
-        <view class="menu-icon-box purple-bg"><text class="menu-emoji">🔄</text></view>
+      <view class="menu-row" hover-class="press" bindtap="goPage" data-url="/pages/borrow/in-transit/in-transit">
+        <view class="menu-icon-box"><icon name="refresh" size="36" /></view>
         <text class="menu-text">在途流程</text>
         <text class="menu-arrow">›</text>
       </view>
@@ -49,6 +49,6 @@
 
   <!-- 退出登录 -->
   <view class="logout-section">
-    <button class="btn-logout" bindtap="onLogout">退出登录</button>
+    <button class="btn-logout" hover-class="press" bindtap="onLogout">退出登录</button>
   </view>
 </view>

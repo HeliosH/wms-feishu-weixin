@@ -4,27 +4,24 @@
   min-height: 100vh;
 }
 
-/* 申请权限横幅 */
+/* ===== 申请权限横幅（扁平简洁） ===== */
 .apply-banner {
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%);
-  border: 1rpx solid #91d5ff;
+  background: #eef6ff;
+  border: none;
 }
 
 .apply-icon-box {
   width: 72rpx;
   height: 72rpx;
   border-radius: 18rpx;
-  background: rgba(24, 144, 255, 0.1);
+  background: rgba(24, 144, 255, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 20rpx;
-}
-
-.apply-icon-text {
-  font-size: 36rpx;
+  flex-shrink: 0;
 }
 
 .apply-text {
@@ -36,21 +33,21 @@
 .apply-title {
   font-size: 30rpx;
   font-weight: 600;
-  color: #0050b3;
+  color: #1a1a1a;
 }
 
 .apply-desc {
   font-size: 24rpx;
-  color: #69c0ff;
+  color: #8c9aa8;
   margin-top: 4rpx;
 }
 
 .apply-arrow {
   font-size: 36rpx;
-  color: #69c0ff;
+  color: #b8c4cf;
 }
 
-/* 借用物品区域 */
+/* ===== 借用物品区域 ===== */
 .section {
   margin-top: 24rpx;
 }
@@ -63,8 +60,8 @@
 }
 
 .section-title {
-  font-size: 28rpx;
-  color: #999;
+  font-size: 26rpx;
+  color: #9aa0a6;
   font-weight: 500;
 }
 
@@ -72,9 +69,9 @@
   font-size: 24rpx;
   color: #1890ff;
   margin-left: 12rpx;
-  background: #e6f7ff;
+  background: #eef6ff;
   padding: 4rpx 14rpx;
-  border-radius: 10rpx;
+  border-radius: 8rpx;
 }
 
 .my-item {
@@ -86,16 +83,12 @@
   width: 72rpx;
   height: 72rpx;
   border-radius: 18rpx;
-  background: #f0f5ff;
+  background: #f2f4f7;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 20rpx;
   flex-shrink: 0;
-}
-
-.my-item-emoji {
-  font-size: 36rpx;
 }
 
 .my-item-info {
@@ -112,13 +105,13 @@
 
 .my-item-time {
   font-size: 24rpx;
-  color: #999;
+  color: #9aa0a6;
   margin-top: 4rpx;
 }
 
 .my-item-qty {
   font-size: 32rpx;
-  font-weight: 700;
+  font-weight: 600;
   color: #1890ff;
 }
 
@@ -129,23 +122,19 @@
   padding: 48rpx 24rpx;
 }
 
-.empty-icon {
-  font-size: 64rpx;
-  margin-bottom: 16rpx;
-}
-
 .empty-text {
   font-size: 28rpx;
-  color: #999;
+  color: #9aa0a6;
+  margin-top: 16rpx;
 }
 
 .empty-hint {
   font-size: 24rpx;
-  color: #ccc;
+  color: #c9cdd4;
   margin-top: 8rpx;
 }
 
-/* 核心操作按钮 */
+/* ===== 核心操作按钮（扁平 · 双色 · 大点击区） ===== */
 .action-buttons {
   display: flex;
   margin-top: 36rpx;
@@ -157,24 +146,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-radius: 24rpx;
+  background: #fff;
+  border-radius: 16rpx;
   padding: 40rpx 20rpx 32rpx;
-}
-
-.borrow-btn {
-  background: linear-gradient(160deg, #e6f7ff 0%, #f0f5ff 100%);
-  border: 1rpx solid #bae7ff;
-}
-
-.return-btn {
-  background: linear-gradient(160deg, #f6ffed 0%, #f0fff0 100%);
-  border: 1rpx solid #b7eb8f;
+  box-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.03);
 }
 
 .btn-icon-rect {
   width: 88rpx;
   height: 88rpx;
-  border-radius: 22rpx;
+  border-radius: 24rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -182,19 +163,17 @@
 }
 
 .borrow-rect {
-  background: linear-gradient(135deg, #1890ff 0%, #40a9ff 100%);
-  box-shadow: 0 8rpx 20rpx rgba(24, 144, 255, 0.3);
+  background: #1890ff;
 }
 
 .return-rect {
-  background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
-  box-shadow: 0 8rpx 20rpx rgba(82, 196, 26, 0.3);
+  background: #52c41a;
 }
 
 .btn-icon-text {
   font-size: 44rpx;
   color: #fff;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .btn-title {
@@ -206,10 +185,10 @@
 
 .btn-desc {
   font-size: 22rpx;
-  color: #999;
+  color: #9aa0a6;
 }
 
-/* 辅助功能 */
+/* ===== 辅助功能 ===== */
 .aux-section {
   margin-top: 36rpx;
 }
@@ -230,23 +209,12 @@
   width: 72rpx;
   height: 72rpx;
   border-radius: 18rpx;
+  background: #f2f4f7;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 20rpx;
   flex-shrink: 0;
-}
-
-.aux-icon-blue {
-  background: #e6f7ff;
-}
-
-.aux-icon-orange {
-  background: #fff7e6;
-}
-
-.aux-icon-text {
-  font-size: 34rpx;
 }
 
 .aux-text {
@@ -262,11 +230,11 @@
 
 .aux-desc {
   font-size: 24rpx;
-  color: #999;
+  color: #9aa0a6;
   margin-top: 4rpx;
 }
 
 .aux-arrow {
   font-size: 36rpx;
-  color: #ccc;
+  color: #c9cdd4;
 }

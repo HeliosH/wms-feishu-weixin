@@ -30,7 +30,7 @@
       </view>
     </view>
     <view class="empty" wx:if="{{!loading && borrowRecords.length === 0}}">
-      <text class="empty-icon">📋</text>
+      <icon name="clipboard" size="72" color="#c9cdd4" />
       <text class="empty-text">没有在途借流程</text>
     </view>
   </view>
@@ -51,7 +51,7 @@
       </view>
     </view>
     <view class="empty" wx:if="{{!loading && returnRecords.length === 0}}">
-      <text class="empty-icon">🎉</text>
+      <icon name="check-circle" size="72" color="#52c41a" />
       <text class="empty-text">没有在途还流程</text>
     </view>
   </view>

@@ -1,8 +1,8 @@
 <view class="page">
   <!-- 待申请权限 -->
-  <view class="apply-banner card" wx:if="{{needApplyRole}}" bindtap="goApplyRole">
+  <view class="apply-banner card" wx:if="{{needApplyRole}}" hover-class="press" bindtap="goApplyRole">
     <view class="apply-icon-box">
-      <text class="apply-icon-text">🔐</text>
+      <icon name="lock" size="40" />
     </view>
     <view class="apply-text">
       <text class="apply-title">申请借用权限</text>
@@ -21,7 +21,7 @@
     <view class="my-items" wx:if="{{myItems.length > 0}}">
       <view class="my-item card" wx:for="{{myItems}}" wx:key="_id">
         <view class="my-item-icon-box">
-          <text class="my-item-emoji">📦</text>
+          <icon name="box" size="40" color="#9aa0a6" />
         </view>
         <view class="my-item-info">
           <text class="my-item-name">{{item.item_name}}</text>
@@ -32,7 +32,7 @@
     </view>
 
     <view class="my-items-empty card" wx:elif="{{!myItemsLoading}}">
-      <text class="empty-icon">📭</text>
+      <icon name="inbox" size="72" color="#c9cdd4" />
       <text class="empty-text">暂无借用的物品</text>
       <text class="empty-hint">点击下方「借」开始借用</text>
     </view>
@@ -40,14 +40,14 @@
 
   <!-- 核心操作按钮 -->
   <view class="action-buttons" wx:if="{{!needApplyRole}}">
-    <view class="action-btn borrow-btn" bindtap="goBorrow">
+    <view class="action-btn borrow-btn" hover-class="press-scale" hover-stay-time="80" bindtap="goBorrow">
       <view class="btn-icon-rect borrow-rect">
         <text class="btn-icon-text">借</text>
       </view>
       <text class="btn-title">申请借用</text>
       <text class="btn-desc">选择物品 · 拍照留档</text>
     </view>
-    <view class="action-btn return-btn" bindtap="goReturn">
+    <view class="action-btn return-btn" hover-class="press-scale" hover-stay-time="80" bindtap="goReturn">
       <view class="btn-icon-rect return-rect">
         <text class="btn-icon-text">还</text>
       </view>
@@ -58,10 +58,10 @@
 
   <!-- 辅助功能 -->
   <view class="aux-section" wx:if="{{!needApplyRole}}">
-    <view class="aux-item card" bindtap="goInTransit">
+    <view class="aux-item card" hover-class="press" bindtap="goInTransit">
       <view class="aux-left">
-        <view class="aux-icon-box aux-icon-blue">
-          <text class="aux-icon-text">📋</text>
+        <view class="aux-icon-box">
+          <icon name="refresh" size="40" />
         </view>
         <view class="aux-text">
           <text class="aux-title">在途流程</text>
@@ -70,10 +70,10 @@
       </view>
       <text class="aux-arrow">›</text>
     </view>
-    <view class="aux-item card" bindtap="goHistory">
+    <view class="aux-item card" hover-class="press" bindtap="goHistory">
       <view class="aux-left">
-        <view class="aux-icon-box aux-icon-orange">
-          <text class="aux-icon-text">📜</text>
+        <view class="aux-icon-box">
+          <icon name="clock" size="40" />
         </view>
         <view class="aux-text">
           <text class="aux-title">借用记录</text>

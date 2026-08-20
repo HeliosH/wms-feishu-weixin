@@ -1,30 +1,49 @@
 {
   "pages": [
+    "pages/index/index",
     "pages/manage/manage",
     "pages/borrow/borrow",
     "pages/mine/mine",
-    "pages/index/index",
     "pages/login/login",
     "pages/item/list/list",
     "pages/item/detail/detail",
     "pages/borrow/apply/apply",
     "pages/borrow/my-borrows/my-borrows",
     "pages/borrow/history/history",
-    "pages/admin/category/category",
-    "pages/admin/inventory/inventory",
-    "pages/admin/inventory-log/inventory-log",
-    "pages/admin/borrow-approval/borrow-approval",
-    "pages/admin/collect-confirm/collect-confirm",
-    "pages/admin/return-confirm/return-confirm",
-    "pages/admin/users/users",
-    "pages/admin/item-borrowers/item-borrowers",
-    "pages/admin/backfill/backfill",
     "pages/borrow/apply-role/apply-role",
     "pages/borrow/return/return",
     "pages/borrow/in-transit/in-transit",
-    "pages/admin/permission-approval/permission-approval",
     "pages/user/profile/profile"
   ],
+  "subPackages": [
+    {
+      "root": "subpackages/admin",
+      "name": "admin",
+      "pages": [
+        "pages/category/category",
+        "pages/inventory/inventory",
+        "pages/inventory-log/inventory-log",
+        "pages/borrow-records/borrow-records",
+        "pages/borrow-approval/borrow-approval",
+        "pages/collect-confirm/collect-confirm",
+        "pages/return-confirm/return-confirm",
+        "pages/users/users",
+        "pages/item-borrowers/item-borrowers",
+        "pages/backfill/backfill",
+        "pages/permission-approval/permission-approval"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/index/index": {
+      "network": "wifi",
+      "packages": ["admin"]
+    },
+    "pages/manage/manage": {
+      "network": "all",
+      "packages": ["admin"]
+    }
+  },
   "window": {
     "backgroundColor": "#F6F6F6",
     "backgroundTextStyle": "light",
@@ -39,12 +58,16 @@
     "backgroundColor": "#ffffff",
     "list": [
       {
-        "pagePath": "pages/manage/manage",
-        "text": "管理"
+        "pagePath": "pages/index/index",
+        "text": "首页"
       },
       {
         "pagePath": "pages/borrow/borrow",
         "text": "借用"
+      },
+      {
+        "pagePath": "pages/manage/manage",
+        "text": "管理"
       },
       {
         "pagePath": "pages/mine/mine",

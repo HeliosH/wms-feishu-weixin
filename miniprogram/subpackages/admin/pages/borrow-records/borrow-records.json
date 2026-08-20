@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "借用总览",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "icon": "/components/icon/icon"
+  }
+}

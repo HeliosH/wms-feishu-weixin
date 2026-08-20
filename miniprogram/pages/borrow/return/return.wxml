@@ -6,9 +6,9 @@
     </view>
 
     <view class="item-list" wx:if="{{items.length > 0}}">
-      <view class="return-item card" wx:for="{{items}}" wx:key="_id" bindtap="selectItem" data-id="{{item._id}}">
+      <view class="return-item card" hover-class="press" wx:for="{{items}}" wx:key="_id" bindtap="selectItem" data-id="{{item._id}}">
         <view class="item-icon-wrap">
-          <text class="item-emoji">📦</text>
+          <icon name="box" size="40" color="#9aa0a6" />
         </view>
         <view class="item-info">
           <text class="item-name">{{item.item_name}}</text>
@@ -19,7 +19,7 @@
     </view>
 
     <view class="empty" wx:elif="{{!loading}}">
-      <text class="empty-icon">🎉</text>
+      <icon name="check-circle" size="72" color="#52c41a" />
       <text class="empty-title">没有待归还的物品</text>
     </view>
   </view>

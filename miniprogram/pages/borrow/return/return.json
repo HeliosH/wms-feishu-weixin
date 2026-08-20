@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "归还物品"
+  "navigationBarTitleText": "归还物品",
+  "usingComponents": {
+    "icon": "/components/icon/icon"
+  }
 }

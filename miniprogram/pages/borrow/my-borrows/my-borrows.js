@@ -17,7 +17,11 @@ Page({
     statusTagClass: ''
   },
 
-  onLoad() {
+  onLoad(options) {
+    // 支持 ?tab=pending|approved|collected 直达对应 tab
+    if (options.tab && STATUS_MAP[options.tab]) {
+      this.setData({ activeTab: options.tab })
+    }
     this.loadRecords()
   },
 

@@ -1,4 +1,5 @@
-require('dotenv').config()
+// 显式加载 server/.env（不受启动时工作目录影响）
+require('dotenv').config({ path: require('path').join(__dirname, '.env') })
 
 const express = require('express')
 const cors = require('cors')

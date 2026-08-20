@@ -1,0 +1,10 @@
+<!-- 骨架屏加载组件 -->
+<view class="skeleton-wrap" wx:if="{{loading}}">
+  <!-- 卡片骨架 -->
+  <block wx:for="{{rowCount}}" wx:key="*this">
+    <view class="skeleton-card">
+      <view class="skeleton-line skeleton-title"></view>
+      <view class="skeleton-line skeleton-text" wx:for="{{2}}" wx:for-item="_" wx:key="*this" style="width: {{_ === 0 ? '60%' : '40%'}};"></view>
+    </view>
+  </block>
+</view>

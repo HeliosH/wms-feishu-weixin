@@ -1,14 +1,19 @@
+/**
+ * Token 管理
+ * 内存 + Storage 双层存储
+ */
+const { TOKEN_KEY } = require('./config')
+
 let _token = ''
-const TOKEN_KEY = 'auth_token'
 
 function getToken() {
   return _token
 }
 
 function setToken(t) {
-  _token = t
-  if (t) {
-    wx.setStorageSync(TOKEN_KEY, t)
+  _token = t || ''
+  if (_token) {
+    wx.setStorageSync(TOKEN_KEY, _token)
   } else {
     wx.removeStorageSync(TOKEN_KEY)
   }

@@ -1,0 +1,13 @@
+<!-- 通用弹窗组件 -->
+<view class="modal-mask" wx:if="{{visible}}" bindtap="onMaskTap" catchtouchmove="noop">
+  <view class="modal-content" catch:tap="noop" style="width: {{width}};">
+    <view class="modal-title" wx:if="{{title}}">{{title}}</view>
+    <view class="modal-body">
+      <slot></slot>
+    </view>
+    <view class="modal-btns" wx:if="{{showButtons}}">
+      <button class="btn-default modal-btn" bindtap="onCancel" wx:if="{{showCancel}}">{{cancelText}}</button>
+      <button class="btn-primary modal-btn" bindtap="onConfirm">{{confirmText}}</button>
+    </view>
+  </view>
+</view>

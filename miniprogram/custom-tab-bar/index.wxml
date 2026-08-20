@@ -1,24 +1,13 @@
 <view class="tab-bar">
-  <view class="tab-item {{selected === 0 ? 'active' : ''}}"
-    wx:if="{{showManage}}"
+  <view class="tab-item {{selected === item.index ? 'active' : ''}}"
+    wx:for="{{tabs}}"
+    wx:key="index"
+    hover-class="press"
+    hover-stay-time="80"
     bindtap="switchTab"
-    data-index="0"
-    data-path="/pages/manage/manage">
-    <text class="tab-icon">⚙️</text>
-    <text class="tab-text">管理</text>
-  </view>
-  <view class="tab-item {{selected === 1 ? 'active' : ''}}"
-    bindtap="switchTab"
-    data-index="1"
-    data-path="/pages/borrow/borrow">
-    <text class="tab-icon">📦</text>
-    <text class="tab-text">借用</text>
-  </view>
-  <view class="tab-item {{selected === 2 ? 'active' : ''}}"
-    bindtap="switchTab"
-    data-index="2"
-    data-path="/pages/mine/mine">
-    <text class="tab-icon">👤</text>
-    <text class="tab-text">我的</text>
+    data-index="{{item.index}}"
+    data-path="{{item.path}}">
+    <icon name="{{item.icon}}" size="44" color="{{selected === item.index ? '#1890ff' : '#9aa0a6'}}" />
+    <text class="tab-text">{{item.text}}</text>
   </view>
 </view>

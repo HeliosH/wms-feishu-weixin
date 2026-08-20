@@ -10,6 +10,13 @@ Page({
     loading: false
   },
 
+  onLoad(options) {
+    // 支持 ?tab=borrow|return 直达对应 tab
+    if (options.tab === 'return') {
+      this.setData({ activeTab: 'return' })
+    }
+  },
+
   onShow() {
     this.loadData()
   },
