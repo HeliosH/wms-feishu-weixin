@@ -61,6 +61,18 @@ exports.main = async (event) => {
       case 'confirmCollect': result = await borrowLogic.confirmCollect(client, tableIds, openid, event.id); break
       case 'confirmReturn': result = await borrowLogic.confirmReturn(client, tableIds, openid, event.id, event.photoUrl); break
       case 'backfillBorrow': result = await borrowLogic.backfillBorrow(client, tableIds, openid, event); break
+      case 'uploadPhoto': {
+        // 云存储文件 → 飞书附件（file_token + 24h 临时预览 URL）
+        if (!event.fileID) throw new Error('缺少 fileID')
+        const dl = await cloud.downloadFile({ fileID: event.fileID })
+        const fileToken = await client.uploadMedia(
+          dl.fileContent,
+          event.fileName || `photo_${Date.now()}.jpg`
+        )
+        const urlMap = await client.getTmpDownloadUrls([fileToken])
+        result = { fileToken, url: urlMap.get(fileToken) || '' }
+        break
+      }
       default: throw new Error(`未知操作: ${action}`)
     }
     return { code: 0, data: result }

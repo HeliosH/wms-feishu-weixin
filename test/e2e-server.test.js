@@ -507,9 +507,117 @@ async function run() {
   })
 
   // ========================
-  // 10. 删除分类（含引用检查场景）
+  // 10. 飞书附件照片（file_token 全链路）
   // ========================
-  console.log('\n[10] 清理性操作')
+  console.log('\n[10] 飞书附件照片')
+
+  // 模拟前端云模式上传：multipart 直传 mock 飞书拿 file_token
+  // （真实链路为 云存储中转 → 云函数 downloadFile → feishu-client.uploadMedia，本节验证 server 侧逻辑）
+  const uploadToFeishu = async (buf, name) => {
+    const form = new FormData()
+    form.append('file_name', name)
+    form.append('parent_type', 'bitable_image')
+    form.append('parent_node', 'bitable_e2e_token')
+    form.append('size', String(buf.length))
+    form.append('file', buf, { filename: name, contentType: 'image/jpeg' })
+    const res = await http.post(
+      `http://localhost:${MOCK_PORT}/open-apis/drive/v1/medias/upload_all`, form,
+      { headers: { ...form.getHeaders(), Authorization: 'Bearer mock-tenant-token-e2e' } }
+    )
+    if (res.data.code !== 0) throw new Error(`mock 飞书上传失败: ${JSON.stringify(res.data)}`)
+    return res.data.data.file_token
+  }
+
+  let attachBorrowId, applyToken, returnToken
+  await test('上传素材到飞书获得 file_token', async () => {
+    applyToken = await uploadToFeishu(Buffer.from('attach-apply-photo-bytes'), 'apply.jpg')
+    returnToken = await uploadToFeishu(Buffer.from('attach-return-photo-bytes'), 'return.jpg')
+    ok(/^boxcn_mock_/.test(applyToken), `token 应为 boxcn_mock_ 前缀，实际 ${applyToken}`)
+    ok(applyToken !== returnToken, '两次上传的 token 应不同')
+    const mockFeishu = global.__mockFeishu
+    ok(mockFeishu.media.has(applyToken), 'mock media 应记录该 token')
+  })
+
+  await test('applyBorrow 传 file_token 写入附件字段', async () => {
+    const record = await call(borrowerToken, '/api/borrow', 'applyBorrow', {
+      itemId, quantity: 2, remark: 'E2E附件', photoUrl: applyToken
+    })
+    ok(record.status === 'pending_approval', `状态应为 pending_approval，实际 ${record.status}`)
+    attachBorrowId = record._id
+    // 直接查 mock 表：file_token 应写入附件字段 apply_photo_file 而非文本字段
+    const mockFeishu = global.__mockFeishu
+    const rec = mockFeishu.tables[TABLES.borrowRecords].find(r => r.record_id === attachBorrowId)
+    ok(Array.isArray(rec.fields.apply_photo_file) && rec.fields.apply_photo_file[0].file_token === applyToken,
+      `apply_photo_file 应含 token，实际 ${JSON.stringify(rec.fields.apply_photo_file)}`)
+    ok(rec.fields.apply_photo === '', 'apply_photo 文本字段应为空')
+  })
+
+  await test('getBorrowList 附件解析为临时 URL', async () => {
+    const list = await call(adminToken, '/api/borrow', 'getBorrowList', { status: 'pending_approval' })
+    const rec = list.find(r => r._id === attachBorrowId)
+    ok(rec, '列表应含附件借用记录')
+    ok(rec.apply_photo === `https://mock-feishu.local/tmp/${applyToken}`,
+      `apply_photo 应解析为临时 URL，实际 ${rec.apply_photo}`)
+  })
+
+  await test('URL 照片仍走文本字段（兼容旧数据）', async () => {
+    // 早前 confirmReturn 用了 '/uploads/e2e/photo.jpg'（URL），应原样保留在文本字段
+    const list = await call(adminToken, '/api/borrow', 'getBorrowList', { status: 'returned' })
+    const rec = list.find(r => r._id === borrowId)
+    ok(rec && rec.return_photo === '/uploads/e2e/photo.jpg',
+      `旧 URL 数据应原样返回，实际 ${rec && rec.return_photo}`)
+  })
+
+  await test('confirmCollect 复制附件到领取照片字段', async () => {
+    await call(adminToken, '/api/borrow', 'approveBorrow', { id: attachBorrowId })
+    await call(adminToken, '/api/borrow', 'confirmCollect', { id: attachBorrowId })
+    const list = await call(adminToken, '/api/borrow', 'getBorrowList', { status: 'collected' })
+    const rec = list.find(r => r._id === attachBorrowId)
+    ok(rec, '应找到已领取记录')
+    ok(rec.collect_photo === `https://mock-feishu.local/tmp/${applyToken}`,
+      `collect_photo 应复制附件并解析，实际 ${rec.collect_photo}`)
+  })
+
+  await test('confirmReturn 传 file_token 并解析临时 URL', async () => {
+    await call(adminToken, '/api/borrow', 'confirmReturn', { id: attachBorrowId, photoUrl: returnToken })
+    const list = await call(adminToken, '/api/borrow', 'getBorrowList', { status: 'returned' })
+    const rec = list.find(r => r._id === attachBorrowId)
+    ok(rec, '应找到已归还记录')
+    ok(rec.return_photo === `https://mock-feishu.local/tmp/${returnToken}`,
+      `return_photo 应解析为临时 URL，实际 ${rec.return_photo}`)
+    const item = await call(adminToken, '/api/item', 'getItemDetail', { id: itemId })
+    ok(Number(item.available_quantity) === 195, `归还后可用应为 195，实际 ${item.available_quantity}`)
+  })
+
+  await test('updateProfile 头像 file_token 解析', async () => {
+    const avatarToken = await uploadToFeishu(Buffer.from('avatar-bytes'), 'avatar.jpg')
+    await call(borrowerToken, '/api/user', 'updateProfile', { name: '借用员小张', avatarUrl: avatarToken })
+    const list = await call(adminToken, '/api/user', 'getUserList')
+    const u = list.find(x => x.openid === BORROWER)
+    ok(u.avatar_url === `https://mock-feishu.local/tmp/${avatarToken}`,
+      `avatar_url 应解析为临时 URL，实际 ${u.avatar_url}`)
+    const me = await call(borrowerToken, '/api/user', 'login')
+    ok(me.avatar_url === `https://mock-feishu.local/tmp/${avatarToken}`,
+      `login 返回的头像也应解析，实际 ${me.avatar_url}`)
+  })
+
+  await test('backfillBorrow 传 file_token 补录并解析', async () => {
+    const bfToken = await uploadToFeishu(Buffer.from('backfill-bytes'), 'backfill.jpg')
+    const record = await call(adminToken, '/api/borrow', 'backfillBorrow', {
+      itemId, borrowerOpenid: BORROWER, quantity: 1, remark: 'E2E附件补录',
+      applyTime: Date.now(), photoUrl: bfToken
+    })
+    ok(record.status === 'collected', `补录状态应为 collected，实际 ${record.status}`)
+    const list = await call(adminToken, '/api/borrow', 'getBorrowList', { borrowerId: BORROWER })
+    const rec = list.find(r => r._id === record._id)
+    ok(rec.collect_photo === `https://mock-feishu.local/tmp/${bfToken}`,
+      `补录 collect_photo 应解析为临时 URL，实际 ${rec.collect_photo}`)
+  })
+
+  // ========================
+  // 11. 删除分类（含引用检查场景）
+  // ========================
+  console.log('\n[11] 清理性操作')
 
   await test('deleteCategory', async () => {
     const r = await call(adminToken, '/api/item', 'deleteCategory', { recordId: catId })

@@ -15,9 +15,10 @@ Component({
           const tempPath = res.tempFiles[0].tempFilePath
           wx.showLoading({ title: '上传中' })
           try {
-            const fileID = await uploadService.uploadPhoto(tempPath)
+            const { token, url } = await uploadService.uploadPhoto(tempPath)
             wx.hideLoading()
-            this.triggerEvent('upload', { fileID })
+            // token 提交给后端，url 用于预览
+            this.triggerEvent('upload', { fileID: token, url })
           } catch (err) {
             wx.hideLoading()
             wx.showToast({ title: err.message || '上传失败', icon: 'none' })

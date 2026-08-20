@@ -1,4 +1,5 @@
 const { fromRecord } = require('./feishu-client')
+const { resolveRecordPhotos } = require('./photo')
 
 async function getCategoryList(client, tableIds) {
   const res = await client.request('GET', `/tables/${tableIds.categories}/records`, null, { page_size: 500 })
@@ -134,7 +135,10 @@ async function getItemBorrowers(client, tableIds, itemId) {
     page_size: 500,
     filter: `CurrentValue.[item_id]="${itemId}"`
   })
-  return (res.items || []).map(fromRecord).filter(r => r.status === 'collected')
+  const records = (res.items || []).map(fromRecord).filter(r => r.status === 'collected')
+  // 附件照片解析为临时 URL（回填 collect_photo 等）
+  await resolveRecordPhotos(client, records)
+  return records
 }
 
 module.exports = {

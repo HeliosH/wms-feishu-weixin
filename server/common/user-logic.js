@@ -1,4 +1,5 @@
 const { fromRecord } = require('./feishu-client')
+const { buildPhotoField, resolveRecordPhotos, USER_AVATAR_FIELDS, isFileToken } = require('./photo')
 
 async function findUserByOpenid(client, usersTableId, openid) {
   const res = await client.request('GET', `/tables/${usersTableId}/records`, null, {
@@ -17,6 +18,8 @@ async function login(client, tableIds, openid) {
     if (user.status === 'inactive') {
       throw new Error('该账号已被禁用，请联系管理员')
     }
+    // 附件头像解析为临时 URL（回填 avatar_url）
+    await resolveRecordPhotos(client, [user], USER_AVATAR_FIELDS)
     return user
   }
 
@@ -35,7 +38,10 @@ async function login(client, tableIds, openid) {
 
 async function getUserList(client, tableIds) {
   const res = await client.request('GET', `/tables/${tableIds.users}/records`, null, { page_size: 500 })
-  return (res.items || []).map(fromRecord)
+  const users = (res.items || []).map(fromRecord)
+  // 附件头像解析为临时 URL
+  await resolveRecordPhotos(client, users, USER_AVATAR_FIELDS)
+  return users
 }
 
 async function updateUserRole(client, tableIds, targetOpenid, newRole) {
@@ -109,9 +115,14 @@ async function updateProfile(client, tableIds, openid, name, avatarUrl) {
   if (!user) throw new Error('用户不存在')
   const fields = {}
   if (name !== undefined && name !== null) fields.name = name
-  if (avatarUrl !== undefined && avatarUrl !== null) fields.avatar_url = avatarUrl
+  if (avatarUrl !== undefined && avatarUrl !== null) {
+    // 头像为 file_token 时写附件字段，为 URL 时写文本字段
+    buildPhotoField(fields, 'avatar_url', 'avatar_file', avatarUrl)
+  }
   const res = await client.request('PUT', `/tables/${tableIds.users}/records/${user._id}`, { fields })
-  return fromRecord(res.record)
+  const updated = fromRecord(res.record)
+  await resolveRecordPhotos(client, [updated], USER_AVATAR_FIELDS)
+  return updated
 }
 
 module.exports = {

@@ -4,7 +4,8 @@
 const authService = require('../services/auth.service')
 const userService = require('../services/user.service')
 const token = require('./token')
-const { USER_INFO_KEY } = require('./config')
+const { USER_INFO_KEY, TRANSPORT } = require('./config')
+const config = { TRANSPORT }
 
 let _userInfo = null
 
@@ -46,9 +47,17 @@ function goHome() {
 }
 
 /**
- * 完整登录流程：wx.login → 换 JWT → 获取用户信息
+ * 完整登录流程
+ * http 模式：wx.login → code 换 JWT → 获取用户信息
+ * cloud 模式：云函数免鉴权（OPENID 自动携带），直接获取/创建用户信息
  */
 async function doLogin() {
+  if (config.TRANSPORT === 'cloud') {
+    const userInfo = await userService.login()
+    setUserInfo(userInfo)
+    return userInfo
+  }
+
   // Step 1: wx.login 获取 code
   const { code } = await new Promise((resolve, reject) => {
     wx.login({ success: resolve, fail: reject })

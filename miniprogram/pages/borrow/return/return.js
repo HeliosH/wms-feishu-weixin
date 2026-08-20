@@ -53,11 +53,11 @@ Page({
         const tempPath = res.tempFiles[0].tempFilePath
         util.showLoading('上传中')
         try {
-          const fileID = await api.uploadPhoto(tempPath)
+          const { token, url } = await api.uploadPhoto(tempPath)
           util.hideLoading()
-          // 提交时用原始相对路径，预览时解析为完整 URL
-          this._photoFileId = fileID
-          this.setData({ photoUrl: util.resolveFileUrl(fileID) })
+          // token 提交给后端，url 用于预览
+          this._photoFileId = token
+          this.setData({ photoUrl: url })
         } catch (err) {
           util.hideLoading()
           util.showToast('上传失败')

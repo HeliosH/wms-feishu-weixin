@@ -16,6 +16,7 @@ const commonFiles = [
   'borrow-logic.js',
   'item-logic.js',
   'user-logic.js',
+  'photo.js',
   'index.js'
 ]
 

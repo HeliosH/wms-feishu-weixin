@@ -2,7 +2,13 @@
  * 核心请求封装
  * 统一处理鉴权、超时、重试、401 自动刷新 token
  *
- * 401 处理策略：
+ * 传输模式（config.TRANSPORT）：
+ *   - 'http'：wx.request → Express 服务（本地开发），401 → 静默刷新 token 重试
+ *   - 'cloud'：wx.cloud.callFunction → 云函数（生产），OPENID 免鉴权，无 401 概念
+ *
+ * 两种模式的响应契约一致：{ code: 0, data } / { code: -1, message }
+ *
+ * 401 处理策略（仅 http 模式）：
  *   1. 请求收到 401 → 进入等待队列
  *   2. 首个触发者执行静默刷新（wx.login → 公共路由 /auth/login，该路由不会 401）
  *   3. 刷新成功 → 队列中的请求携带新 token 重试
@@ -15,6 +21,65 @@ let _isRefreshing = false
 let _requestQueue = []
 
 /**
+ * URL → 云函数名（'/user' → 'userManage'）
+ */
+function _resolveCloudFunction(url) {
+  const path = url.replace(/^\//, '').split('/')[0] // e.g. 'user'
+  return config.CLOUD_FUNCTIONS[path]
+}
+
+/**
+ * 云函数模式请求
+ */
+function cloudRequest(url, data, options = {}) {
+  const { skipToast = false, retryCount = config.RETRY_COUNT } = options
+  const funcName = _resolveCloudFunction(url)
+  if (!funcName) {
+    return Promise.reject({ code: -1, message: `云函数模式下不支持该路由: ${url}` })
+  }
+
+  return new Promise((resolve, reject) => {
+    const doCall = (attempt) => {
+      wx.cloud.callFunction({
+        name: funcName,
+        data: data || {},
+        success(res) {
+          const result = res.result
+          if (result && result.code === 0) {
+            resolve(result.data)
+          } else {
+            const errMsg = (result && result.message) || '请求失败'
+            if (!skipToast) _toast(errMsg)
+            reject(result || { code: -1, message: errMsg })
+          }
+        },
+        fail(err) {
+          // 网络错误重试（指数退避）
+          if (attempt < retryCount) {
+            setTimeout(() => doCall(attempt + 1), 1000 * (attempt + 1))
+            return
+          }
+          const errMsg = _getCloudError(err)
+          if (!skipToast) _toast(errMsg)
+          reject({ code: -1, message: errMsg, detail: err })
+        }
+      })
+    }
+
+    doCall(0)
+  })
+}
+
+function _getCloudError(err) {
+  if (!err) return '云函数调用失败'
+  const msg = err.errMsg || ''
+  if (msg.includes('not found')) return '云函数不存在，请先上传部署'
+  if (msg.includes('env')) return '云开发环境错误，请检查 CLOUD_ENV 配置'
+  if (msg.includes('timeout')) return '请求超时，请检查网络'
+  return '云函数调用失败，请稍后重试'
+}
+
+/**
  * 基础请求方法
  * @param {string} method - GET / POST
  * @param {string} url - 路径（不含 BASE_URL）
@@ -23,6 +88,11 @@ let _requestQueue = []
  * @returns {Promise<any>}
  */
 function request(method, url, data, options = {}) {
+  // 云函数模式：method 无意义（云函数内自行路由），数据透传
+  if (config.TRANSPORT === 'cloud') {
+    return cloudRequest(url, data, options)
+  }
+
   const { skipAuth = false, skipToast = false, retryCount = config.RETRY_COUNT } = options
   const fullUrl = config.BASE_URL + url
   const headers = { 'Content-Type': 'application/json' }

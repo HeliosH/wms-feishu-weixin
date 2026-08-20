@@ -56,6 +56,19 @@ exports.main = async (event) => {
       case 'toggleUserStatus': result = await userLogic.toggleUserStatus(client, tableIds, event.openid, event.status); break
       case 'applyRole': result = await userLogic.applyRole(client, tableIds, openid, event.name); break
       case 'approveRole': result = await userLogic.approveRole(client, tableIds, event.openid, event.approved, event.role); break
+      case 'updateProfile': result = await userLogic.updateProfile(client, tableIds, openid, event.name, event.avatarUrl); break
+      case 'uploadPhoto': {
+        // 云存储文件 → 飞书附件（file_token + 24h 临时预览 URL），用于头像等
+        if (!event.fileID) throw new Error('缺少 fileID')
+        const dl = await cloud.downloadFile({ fileID: event.fileID })
+        const fileToken = await client.uploadMedia(
+          dl.fileContent,
+          event.fileName || `avatar_${Date.now()}.jpg`
+        )
+        const urlMap = await client.getTmpDownloadUrls([fileToken])
+        result = { fileToken, url: urlMap.get(fileToken) || '' }
+        break
+      }
       default: throw new Error(`未知操作: ${action}`)
     }
     return { code: 0, data: result }

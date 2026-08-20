@@ -1,8 +1,9 @@
 const { fromRecord } = require('./feishu-client')
+const { buildPhotoField, resolveRecordPhotos } = require('./photo')
 
 async function getUserByOpenid(client, usersTableId, openid) {
   const res = await client.request('GET', `/tables/${usersTableId}/records`, null, {
-    filter: `CurrentValue.[openid] = "${openid}"`,
+    filter: `CurrentValue.[openid]="${openid}"`,
     page_size: 1
   })
   if (res.items && res.items.length > 0) return fromRecord(res.items[0])
@@ -21,29 +22,29 @@ async function applyBorrow(client, tableIds, openid, data) {
     throw new Error(`库存不足，当前可用: ${Number(item.available_quantity) || 0}`)
   }
 
-  const res = await client.request('POST', `/tables/${tableIds.borrowRecords}/records`, {
-    fields: {
-      item_id: data.itemId,
-      item_name: item.name,
-      borrower_id: openid,
-      borrower_name: user.name || openid,
-      quantity,
-      status: 'pending_approval',
-      apply_remark: data.remark || '',
-      apply_time: Date.now(),
-      apply_photo: data.photoUrl || '',
-      approver_id: '',
-      approver_name: '',
-      approve_time: null,
-      reject_reason: '',
-      collect_time: null,
-      collect_photo: '',
-      collect_operator: '',
-      return_time: null,
-      return_photo: '',
-      return_operator: ''
-    }
-  })
+  const fields = {
+    item_id: data.itemId,
+    item_name: item.name,
+    borrower_id: openid,
+    borrower_name: user.name || openid,
+    quantity,
+    status: 'pending_approval',
+    apply_remark: data.remark || '',
+    apply_time: Date.now(),
+    approver_id: '',
+    approver_name: '',
+    approve_time: null,
+    reject_reason: '',
+    collect_time: null,
+    collect_photo: '',
+    collect_operator: '',
+    return_time: null,
+    return_photo: '',
+    return_operator: ''
+  }
+  // photoUrl 为 URL 时写文本字段，为 file_token 时写附件字段
+  buildPhotoField(fields, 'apply_photo', 'apply_photo_file', data.photoUrl)
+  const res = await client.request('POST', `/tables/${tableIds.borrowRecords}/records`, { fields })
   return fromRecord(res.record)
 }
 
@@ -52,20 +53,23 @@ async function getBorrowList(client, tableIds, params = {}) {
   const filters = []
 
   if (params.status) {
-    filters.push(`CurrentValue.[status] = "${params.status}"`)
+    filters.push(`CurrentValue.[status]="${params.status}"`)
   }
   if (params.borrowerId) {
-    filters.push(`CurrentValue.[borrower_id] = "${params.borrowerId}"`)
+    filters.push(`CurrentValue.[borrower_id]="${params.borrowerId}"`)
   }
   if (params.itemId) {
-    filters.push(`CurrentValue.[item_id] = "${params.itemId}"`)
+    filters.push(`CurrentValue.[item_id]="${params.itemId}"`)
   }
   if (filters.length > 0) {
-    queryParams.filter = filters.join(' AND ')
+    queryParams.filter = filters.join('&&')
   }
 
   const res = await client.request('GET', `/tables/${tableIds.borrowRecords}/records`, null, queryParams)
-  return (res.items || []).map(fromRecord)
+  const records = (res.items || []).map(fromRecord)
+  // 附件照片解析为临时 URL（回填 apply_photo / collect_photo / return_photo）
+  await resolveRecordPhotos(client, records)
+  return records
 }
 
 async function approveBorrow(client, tableIds, openid, recordId) {
@@ -161,14 +165,17 @@ async function confirmCollect(client, tableIds, openid, recordId) {
     throw new Error('该记录不在已审批状态，无法确认领取')
   }
 
-  const res = await client.request('PUT', `/tables/${tableIds.borrowRecords}/records/${recordId}`, {
-    fields: {
-      status: 'collected',
-      collect_time: Date.now(),
-      collect_photo: record.apply_photo || '',
-      collect_operator: user.name || openid
-    }
-  })
+  const fields = {
+    status: 'collected',
+    collect_time: Date.now(),
+    collect_photo: record.apply_photo || '',
+    collect_operator: user.name || openid
+  }
+  // 附件照片同步复制（file_token 数组）
+  if (Array.isArray(record.apply_photo_file) && record.apply_photo_file.length > 0) {
+    fields.collect_photo_file = record.apply_photo_file.map(f => ({ file_token: f.file_token }))
+  }
+  const res = await client.request('PUT', `/tables/${tableIds.borrowRecords}/records/${recordId}`, { fields })
   return fromRecord(res.record)
 }
 
@@ -188,13 +195,14 @@ async function confirmReturn(client, tableIds, openid, recordId, photoUrl) {
   const newBorrowed = Math.max(0, itemBorrowed - recQty)
 
   // Saga step 1: 先改借用记录状态为 returned
+  const returnFields = {
+    status: 'returned',
+    return_time: Date.now(),
+    return_operator: user.name || openid
+  }
+  buildPhotoField(returnFields, 'return_photo', 'return_photo_file', photoUrl)
   const res = await client.request('PUT', `/tables/${tableIds.borrowRecords}/records/${recordId}`, {
-    fields: {
-      status: 'returned',
-      return_time: Date.now(),
-      return_photo: photoUrl || '',
-      return_operator: user.name || openid
-    }
+    fields: returnFields
   })
 
   // Saga step 2: 恢复库存（关键步骤，失败时补偿 step 1）
@@ -261,29 +269,34 @@ async function backfillBorrow(client, tableIds, openid, data) {
   const now = Date.now()
   let record
   try {
-    const res = await client.request('POST', `/tables/${tableIds.borrowRecords}/records`, {
-      fields: {
-        item_id: data.itemId,
-        item_name: item.name,
-        borrower_id: data.borrowerOpenid,
-        borrower_name: borrower.name || data.borrowerOpenid,
-        quantity,
-        status: 'collected',
-        apply_remark: `补录 - ${data.remark || ''}`,
-        apply_time: data.applyTime || now,
-        apply_photo: data.photoUrl || '',
-        approver_id: openid,
-        approver_name: operator.name || '',
-        approve_time: now,
-        reject_reason: '',
-        collect_time: now,
-        collect_photo: data.photoUrl || '',
-        collect_operator: operator.name || openid,
-        return_time: null,
-        return_photo: '',
-        return_operator: ''
-      }
-    })
+    const fields = {
+      item_id: data.itemId,
+      item_name: item.name,
+      borrower_id: data.borrowerOpenid,
+      borrower_name: borrower.name || data.borrowerOpenid,
+      quantity,
+      status: 'collected',
+      apply_remark: `补录 - ${data.remark || ''}`,
+      apply_time: data.applyTime || now,
+      approver_id: openid,
+      approver_name: operator.name || '',
+      approve_time: now,
+      reject_reason: '',
+      collect_time: now,
+      collect_operator: operator.name || openid,
+      return_time: null,
+      return_photo: '',
+      return_operator: ''
+    }
+    // 同一张照片写入申请附件与领取附件
+    buildPhotoField(fields, 'apply_photo', 'apply_photo_file', data.photoUrl)
+    if (Array.isArray(fields.apply_photo_file)) {
+      fields.collect_photo_file = fields.apply_photo_file.map(f => ({ file_token: f.file_token }))
+      fields.collect_photo = ''
+    } else {
+      fields.collect_photo = fields.apply_photo || ''
+    }
+    const res = await client.request('POST', `/tables/${tableIds.borrowRecords}/records`, { fields })
     record = fromRecord(res.record)
   } catch (err) {
     // 补偿：恢复库存

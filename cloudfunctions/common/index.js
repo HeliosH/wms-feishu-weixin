@@ -2,6 +2,7 @@ const feishuClient = require('./feishu-client')
 const borrowLogic = require('./borrow-logic')
 const itemLogic = require('./item-logic')
 const userLogic = require('./user-logic')
+const photo = require('./photo')
 
 module.exports = {
   createFeishuClient: feishuClient.createFeishuClient,
@@ -9,5 +10,6 @@ module.exports = {
   toBitableFields: feishuClient.toBitableFields,
   borrowLogic,
   itemLogic,
-  userLogic
+  userLogic,
+  photo
 }

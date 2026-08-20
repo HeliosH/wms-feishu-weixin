@@ -72,8 +72,8 @@ Page({
         const tempPath = res.tempFiles[0].tempFilePath
         util.showLoading('上传中')
         try {
-          const fileID = await api.uploadPhoto(tempPath)
-          const updated = await api.updateProfile(undefined, fileID)
+          const { token } = await api.uploadPhoto(tempPath)
+          const updated = await api.updateProfile(undefined, token)
           auth.setUserInfo({ ...this.data.userInfo, name: updated.name, avatar_url: updated.avatar_url })
           this.setData({ userInfo: auth.getUserInfo() })
           util.hideLoading()

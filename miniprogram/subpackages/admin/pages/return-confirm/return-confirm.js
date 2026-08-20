@@ -37,11 +37,11 @@ Page({
         const tempPath = res.tempFiles[0].tempFilePath
         util.showLoading('上传中')
         try {
-          const fileID = await api.uploadPhoto(tempPath)
-          // 展示用完整 URL，提交用原始相对路径
+          const { token, url } = await api.uploadPhoto(tempPath)
+          // url 用于预览，token 提交给后端
           this.setData({
-            [`records[${index}].returnPhotoUrl`]: util.resolveFileUrl(fileID),
-            [`records[${index}].returnPhotoFileId`]: fileID
+            [`records[${index}].returnPhotoUrl`]: url,
+            [`records[${index}].returnPhotoFileId`]: token
           })
           util.hideLoading()
         } catch (err) {

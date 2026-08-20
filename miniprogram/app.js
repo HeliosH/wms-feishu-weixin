@@ -1,5 +1,6 @@
 /**
  * App 全局逻辑
+ * - 云开发初始化（cloud 传输模式）
  * - token 初始化
  * - 用户信息缓存恢复
  * - 全局错误监听
@@ -8,6 +9,7 @@
  */
 const token = require('./utils/token')
 const auth = require('./utils/auth')
+const config = require('./utils/config')
 
 App({
   globalData: {
@@ -19,7 +21,16 @@ App({
   },
 
   onLaunch() {
-    // 初始化 token
+    // 云函数模式：初始化云开发（CLOUD_ENV 为空时用默认环境）
+    if (config.TRANSPORT === 'cloud' && wx.cloud) {
+      wx.cloud.init(
+        config.CLOUD_ENV
+          ? { env: config.CLOUD_ENV, traceUser: true }
+          : { traceUser: true }
+      )
+    }
+
+    // 初始化 token（http 模式使用）
     token.initToken()
 
     // 恢复缓存的用户信息

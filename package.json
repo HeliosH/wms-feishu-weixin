@@ -15,6 +15,9 @@
     "test:e2e": "node test/e2e-server.test.js",
     "test:real": "node test/e2e-real-feishu.test.js",
     "test:fe": "node test/frontend-logic.test.js",
+    "test:cloud": "node scripts/copy-common.js && node test/cloud-functions.test.js",
+    "cloud:sync": "node scripts/copy-common.js",
+    "cloud:setup-fields": "node scripts/setup-feishu-attachment-fields.js",
     "test:ui": "node test/ui-automator.js",
     "mock:feishu": "node test/mock-feishu-server.js"
   },
